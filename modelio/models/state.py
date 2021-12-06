@@ -24,7 +24,8 @@ class StateModel(BaseModel):
         super().__init__(_id)
         self.name = name
         cache_base_path = os.environ.get('MODELIO_CACHE_BASE_PATH')
-        self.caching_path = f'{cache_base_path}/{self.name}'
+        # resolved path name includes model name and id
+        self._cpath = f'{cache_base_path}/{self.name}-{self.id}'
 
     @property
     def name(self) -> str:
@@ -38,7 +39,7 @@ class StateModel(BaseModel):
         """
         Serialize contents and save to cache as a json file
         """
-        with open(self.caching_path, 'w+') as json_file:
+        with open(self._cpath, 'w+') as json_file:
             cached_payload = self.serialize()
             json.dump(cached_payload, json_file)
         self._logger.debug("Cached state model: %s", self)
@@ -48,7 +49,7 @@ class StateModel(BaseModel):
         Load contents from json into state model
         """
         try:
-            with open(self.caching_path, 'r') as json_file:
+            with open(self._cpath, 'r') as json_file:
                 device_payload: Dict[str, Any] = json.load(json_file)
         except JSONDecodeError as exc:
             self._logger.error("Model cache document corrupt:\n%s", exc)
