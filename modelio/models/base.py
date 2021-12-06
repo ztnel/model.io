@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-State Model Abstract
-====================
+Base Model Abstract
+===================
 Modified: 2021-12
 
 Dependencies:
@@ -11,13 +11,12 @@ Dependencies:
 """
 
 import logging
-from typing import Any, Dict, Union
+from typing import Any, Dict
+from modelio.typing import _PKey
 from abc import ABC, abstractmethod
 
-_PKey = Union[int, str]
 
-
-class StateModel(ABC):
+class BaseModel(ABC):
 
     def __init__(self, _id: _PKey) -> None:
         self._logger = logging.getLogger(__name__)
@@ -32,7 +31,7 @@ class StateModel(ABC):
     def id(self) -> _PKey:
         """
         Get state model id
-        
+
         :return: state model id
         :rtype: _PKey
         """
