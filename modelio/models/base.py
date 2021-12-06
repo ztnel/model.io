@@ -32,6 +32,7 @@ class StateModel(ABC):
     def id(self) -> _PKey:
         """
         Get state model id
+        
         :return: state model id
         :rtype: _PKey
         """
@@ -41,6 +42,7 @@ class StateModel(ABC):
     def id(self, _id: _PKey) -> None:
         """
         Set state model id
+
         :param _id: state model id 
         :type _id: _PKey
         """
