@@ -19,7 +19,7 @@ import copy
 import logging
 import asyncio
 import traceback
-from typing import Any, Coroutine, Dict, Tuple, Type, TypeVar, Callable, List, Union
+from typing import Any, Coroutine, Dict, Tuple, Type, TypeVar, Callable, List
 from modelio.exceptions.state import NullCheckoutError
 from modelio.models.state import StateModel
 
