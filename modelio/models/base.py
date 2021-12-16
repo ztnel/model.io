@@ -14,6 +14,7 @@ import logging
 from typing import Any, Dict
 from modelio.typing import _PKey
 from abc import ABC, abstractmethod
+from modelio.etc.formatter import pformat
 
 
 class BaseModel(ABC):
@@ -26,6 +27,9 @@ class BaseModel(ABC):
         if hasattr(o, 'id') and hasattr(self, 'id'):
             return o.id == self.id  # type: ignore
         return False
+
+    def __repr__(self) -> str:
+        return "{}".format(pformat(self.serialize()))
 
     @property
     def id(self) -> _PKey:
