@@ -19,12 +19,18 @@ import copy
 import logging
 import asyncio
 import traceback
-from typing import Any, Coroutine, Tuple, Type, TypeVar, Callable, List, Union
+from typing import Any, Coroutine, Dict, Tuple, Type, TypeVar, Callable, List, Union
+from modelio.exceptions.state import NullCheckoutError
+from modelio.models.state import StateModel
 
 # generic runtime model type
 _T = TypeVar('_T', bound=StateModel)
 
-class StateManager:
+
+class StateIO:
+
+    # storage mechanism is { name: Model }
+    STATE_MODELS: Dict[Type, Any] = {}
 
     def __init__(self) -> None:
         self._logger = logging.getLogger(__name__)
@@ -34,9 +40,31 @@ class StateManager:
 
     def __exit__(self, exc_type, exc_val, exc_tb): ...
 
-    def _load_runtime_models(self) -> None: ...
+    def load(self, model: _T) -> _T:
+        """
+        Load state model into memory
 
-    def commit(self, state: StateModel, source: bool = False, cache: bool = True) -> bool:
+        :param model: state model
+        :type model: StateModel
+        """
+        self.STATE_MODELS[model.name] = model
+        return model
+
+    def checkout(self, name: str, _type: Type[_T]) -> _T:
+        """
+        Returns state model
+
+        :param name: [description]
+        :type name: str
+        :return: [description]
+        :rtype: StateModel
+        """
+        mdl = self.STATE_MODELS.get(name)
+        if not mdl:
+            raise NullCheckoutError
+        return copy.deepcopy(mdl)
+
+    def commit(self, state: _T, cache: bool = True) -> _T:
         """
         Commiting a state variable change requires up to 3 steps:
           1. Independant system validation (for external system state changes)
@@ -51,18 +79,11 @@ class StateManager:
         :return: commit status
         :rtype: bool
         """
-        # cache old model
-        cached = copy.deepcopy(self.state)
-        # await update state
-        self.experiment = state
-        # async update subscribers
-        asyncio.run(self._subscriber_runner(state, cr.experiment))
-        for _property in cr.experiment_properties.keys():
-            if getattr(cached, _property) != getattr(state, _property):
-                asyncio.run(self._subscriber_runner(
-                    state, cr.experiment_properties[_property]))
-        self._logger.info("State change commit for %s successful", state)
-        return True
+        self.STATE_MODELS[state.name] = state
+        if cache:
+            state.cache()
+            self._logger.debug("Cached commited state model %s", state)
+        return state
 
     def subscribe(self, state_type: Type[_T], callback: Callable[[_T], Coroutine[Any, Any, None]]) -> None:
         """
@@ -85,17 +106,6 @@ class StateManager:
         :type callback: Callable[[_T], Coroutine[Any, Any, None]]
         :raises RuntimeError: if the requested property does not exist in the provided state
         """
-        if not hasattr(state_type, _property):
-            raise RuntimeError
-        if state_type is ImagingProfile: prop_callbacks = cr.ip_properties
-        elif state_type is Device: prop_callbacks = cr.device_properties
-        elif state_type is Protocol: prop_callbacks = cr.protocol_properties
-        elif state_type is Experiment: prop_callbacks = cr.experiment_properties
-        else: prop_callbacks = cr.icb_properties
-        if _property in prop_callbacks.keys():
-            prop_callbacks[_property].append(callback)
-        else:
-            prop_callbacks[_property] = [callback]
 
     async def _subscriber_runner(self, state_var: _T,
                                  registry: List[Callable[[_T], Coroutine[Any, Any, None]]]) -> None:
