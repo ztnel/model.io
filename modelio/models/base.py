@@ -2,19 +2,14 @@
 """
 Base Model Abstract
 ===================
-Modified: 2021-12
-
-Dependencies:
--------------
-```
-```
+Modified: 2022-03
 """
 
 import logging
 from typing import Any, Dict
 from modelio.typing import _PKey
 from abc import ABC, abstractmethod
-from modelio.etc.formatter import pformat
+from modelio.utils.funcs import pformat
 
 
 class BaseModel(ABC):
@@ -22,6 +17,9 @@ class BaseModel(ABC):
     def __init__(self, _id: _PKey) -> None:
         self._logger = logging.getLogger(__name__)
         self.id = _id
+
+    def __typehash__(self) -> int:
+        return hash(type(self))
 
     def __eq__(self, o: object) -> bool:
         if hasattr(o, 'id') and hasattr(self, 'id'):
