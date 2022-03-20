@@ -5,7 +5,7 @@ Concurrency Utils
 Modified: 2022-03
 """
 
-from threading import Lock, Thread
+from threading import Lock
 from typing import Callable, TypeVar
 
 _T = TypeVar('_T')
