@@ -23,20 +23,10 @@ BP_ENV_VAR = "MODELIO_CACHE_BASE_PATH"
 
 class StateModel(BaseModel):
 
-    def __init__(self, _id: _PKey, name: str) -> None:
+    def __init__(self, _id: _PKey) -> None:
         super().__init__(_id)
-        self.name = name
         self.cache_base_path = os.environ.get(BP_ENV_VAR)
-        # resolved path name includes model name and id
-        self._cpath = f'{self.cache_base_path}/{self.name}-{self.id}'
-
-    @property
-    def name(self) -> str:
-        return self.__name
-
-    @name.setter
-    def name(self, name: str) -> None:
-        self.__name = name
+        self._cpath = f'{self.cache_base_path}/{self.__class__.__name__}.json'
 
     def cache(self) -> None:
         """
