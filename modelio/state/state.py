@@ -20,6 +20,8 @@ import logging
 import asyncio
 import traceback
 from typing import Any, Coroutine, Dict, Tuple, Type, TypeVar, Callable, List
+from modelio.utils.funcs import pformat
+from modelio.utils.concurrency import ThreadUtils as tutils
 from modelio.exceptions.state import NullCheckoutError
 from modelio.models.state import StateModel
 
@@ -27,10 +29,10 @@ from modelio.models.state import StateModel
 _T = TypeVar('_T', bound=StateModel)
 
 
-class StateIO:
+class State:
 
     # storage mechanism is { name: Model }
-    STATE_MODELS: Dict[Type, Any] = {}
+    _ssm: Dict[int, Any] = {}
 
     def __init__(self) -> None:
         self._logger = logging.getLogger(__name__)
@@ -47,39 +49,30 @@ class StateIO:
         :param model: state model
         :type model: StateModel
         """
-        self.STATE_MODELS[model.name] = model
+        self._ssm[model.__typehash__()] = model
+        self._logger.info("Loaded state model: %s", pformat(model.serialize()))
         return model
 
-    def checkout(self, name: str, _type: Type[_T]) -> _T:
+    @tutils.lock(tutils.state_lock)
+    def checkout(self, _type: Type[_T]) -> _T:
         """
-        Returns state model
+        Returns requested state model
 
-        :param name: [description]
-        :type name: str
-        :return: [description]
+        :return: deep copy of requested state model
         :rtype: StateModel
         """
-        mdl = self.STATE_MODELS.get(name)
+        self._logger.info("Checking out state model of type %s", _type)
+        _type_hash = hash(_type)
+        self._logger.debug("Computed type hash: %s", _type_hash)
+        mdl = self._ssm.get(_type_hash)
         if not mdl:
             raise NullCheckoutError
         return copy.deepcopy(mdl)
 
-    def commit(self, state: _T, cache: bool = True) -> _T:
-        """
-        Commiting a state variable change requires up to 3 steps:
-          1. Independant system validation (for external system state changes)
-          2. Update state variable in runtime layer (here)
-          3. Notify subscribers of state change
-        :param state: proposed state variable change
-        :type state: StateModel
-        :param source: flag indicating the source module is pushing these changes (do not call validator)
-        :type source: bool
-        :param cache: flag which indicates the commit should update the system cache, defaults to True
-        :type cache: bool, optional
-        :return: commit status
-        :rtype: bool
-        """
-        self.STATE_MODELS[state.name] = state
+    @tutils.lock(tutils.state_lock)
+    def commit(self, state: _T, cache: bool = False) -> _T:
+        _type_hash = hash(type(state))
+        self._ssm[_type_hash] = state
         if cache:
             state.cache()
             self._logger.debug("Cached commited state model %s", state)
@@ -88,29 +81,18 @@ class StateIO:
     def subscribe(self, state_type: Type[_T], callback: Callable[[_T], Coroutine[Any, Any, None]]) -> None:
         """
         Subscribe an asynchronous state change listener to a designated runtime model
+
         :param state_type: runtime type to subscribe to
         :type state_type: Type[T]
         :param callback: state change listener callback
         :type callback: Callable[[T], Coroutine[Any, Any, None]]
         """
 
-    def subscribe_property(self, state_type: Type[_T], _property: str, callback: Callable[[_T],
-                           Coroutine[Any, Any, None]]) -> None:
-        """
-        Subscribe an asynchronous state change listener to a designated runtime model property
-        :param state_type: runtime type to subscribe to
-        :type state_type: Type[_T]
-        :param _property: property to subscribe to
-        :type _property: str
-        :param callback: state change listener callback
-        :type callback: Callable[[_T], Coroutine[Any, Any, None]]
-        :raises RuntimeError: if the requested property does not exist in the provided state
-        """
-
     async def _subscriber_runner(self, state_var: _T,
                                  registry: List[Callable[[_T], Coroutine[Any, Any, None]]]) -> None:
         """
         Async runner that executes all subscriber coroutines with new runtime model state changes.
+
         :param state_var: pre-validated runtime model to pass to subscribers
         :type state_var: T
         :param registry: list of subscriber coroutines
