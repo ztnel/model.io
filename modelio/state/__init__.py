@@ -1,3 +1,4 @@
-__all__ = ["StateIO"]
 
-from modelio.state.state import StateIO
+from modelio.state.state import State
+
+__all__ = ["State"]
