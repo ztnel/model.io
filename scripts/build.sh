@@ -34,8 +34,8 @@ done
 shift $((OPTIND -1))
 
 if [ -z "$VERSION" ]; then
-        echo 'Missing github publish ref' >&2
-        exit 1
+    echo 'Missing github publish ref' >&2
+    exit 1
 fi
 
 
