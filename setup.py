@@ -5,7 +5,7 @@ import os
 from setuptools import find_packages, setup
 
 # meta-data.
-NAME = 'modelio'
+NAME = 'model.io'
 DESCRIPTION = 'Lightweight state management engine for posix compliant systems'
 EMAIL = 'christian@leapsystems.online'
 AUTHOR = 'Christian Sargusingh'
