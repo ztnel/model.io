@@ -1,5 +1,7 @@
+import os
 import logging
 from typing import Any, Dict
+from datetime import datetime
 
 from modelio import _PKey
 from modelio import StateModel
@@ -8,8 +10,8 @@ from modelio import State
 
 class User(StateModel):
 
-    def __init__(self, _id: _PKey, name: str) -> None:
-        super().__init__(_id, name)
+    def __init__(self, _id: _PKey) -> None:
+        super().__init__(_id)
 
     @property
     def name(self) -> str:
@@ -39,16 +41,52 @@ class User(StateModel):
             setattr(self, k, v)
 
 
+class Telemetry(StateModel):
+
+    def __init__(self, _id: _PKey) -> None:
+        super().__init__(_id)
+
+    @property
+    def tp(self) -> float:
+        return self.__tp
+
+    @tp.setter
+    def tp(self, value: float) -> None:
+        self.__tp = value
+
+    @property
+    def timestamp(self) -> float:
+        return datetime.now().timestamp()
+
+    def serialize(self) -> Dict[str, Any]:
+        return {
+            'id': self.id,
+            'temp': self.tp,
+            'timestamp': self.timestamp
+        }
+
+    def deserialize(self, **kwargs) -> None:
+        for k, v in kwargs.items():
+            if k == "timestamp":
+                continue
+            setattr(self, k, v)
+
+
 if __name__ == "__main__":
+    os.environ['MODELIO_CACHE_BASE_PATH'] = "tests/cache"
     logging.basicConfig(level=logging.DEBUG)
     _log = logging.getLogger(__name__)
 
-    u = User(_id=1, name='user')
+    u = User(_id=1)
+    u.deserialize(**{'name': "chris", 'email': "chris@email.io"})
+    t = Telemetry(_id=1)
+    t.deserialize(**{'tp': 65.0})
     u.email = "bad"
     _log.info(u)
 
     with State() as state:
         state.load(u)
+        state.load(t)
 
     with State() as state:
         user = state.checkout(User)
@@ -57,10 +95,17 @@ if __name__ == "__main__":
     with State() as state:
         user = state.checkout(User)
         user.email = "bad@email.com"
-        state.commit(user)
+        state.commit(user, cache=True)
 
     with State() as state:
         user = state.checkout(User)
-        _log.info(user.email)
+        _log.info(user)
 
-    _log.info(user)
+    with State() as state:
+        telemetry = state.checkout(Telemetry)
+        _log.info(telemetry)
+
+    with State() as state:
+        telemetry = state.checkout(Telemetry)
+        telemetry.tp = 45.0
+        state.commit(telemetry, cache=True)
