@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 # meta-data.
 NAME = 'modelio'
-DESCRIPTION = 'Low profile application state management system for embedded systems'
+DESCRIPTION = 'Lightweight state management engine for posix compliant systems'
 EMAIL = 'christian@leapsystems.online'
 AUTHOR = 'Christian Sargusingh'
 REQUIRES_PYTHON = '>=3.7.0'
