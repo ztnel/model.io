@@ -5,7 +5,7 @@ import os
 from setuptools import find_packages, setup
 
 # meta-data.
-NAME = 'model.io'
+NAME = 'myosin'
 DESCRIPTION = 'Lightweight state management engine for posix compliant systems'
 EMAIL = 'christian@leapsystems.online'
 AUTHOR = 'Christian Sargusingh'
@@ -29,7 +29,7 @@ except FileNotFoundError:
 # Load the package's __version__.py module as a dictionary.
 about = {}
 if not VERSION:
-    project_slug = "modelio"
+    project_slug = "myosin"
     with open(os.path.join(here, project_slug, '__version__.py')) as f:
         exec(f.read(), about)
 else:
@@ -43,7 +43,7 @@ setup(
     long_description_content_type='text/markdown',
     author=AUTHOR,
     author_email=EMAIL,
-    url='https://github.com/ztnel/modelio',
+    url='https://github.com/ztnel/myosin',
     python_requires=REQUIRES_PYTHON,
     packages=find_packages(),
     include_package_data=True,

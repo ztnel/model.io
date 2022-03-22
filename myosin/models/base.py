@@ -7,9 +7,10 @@ Modified: 2022-03
 
 import logging
 from typing import Any, Dict
-from modelio.typing import _PKey
 from abc import ABC, abstractmethod
-from modelio.utils.funcs import pformat
+
+from myosin.typing import _PKey
+from myosin.utils.funcs import pformat
 
 
 class BaseModel(ABC):

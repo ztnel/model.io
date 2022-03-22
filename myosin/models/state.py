@@ -14,11 +14,12 @@ import os
 import json
 from json import JSONDecodeError
 from typing import Any, Dict
-from modelio.exceptions.cache import CachePathError, NullCachePathError
-from modelio.typing import _PKey
-from modelio.models.base import BaseModel
 
-BP_ENV_VAR = "MODELIO_CACHE_BASE_PATH"
+from myosin.exceptions.cache import CachePathError, NullCachePathError
+from myosin.typing import _PKey
+from myosin.models.base import BaseModel
+
+BP_ENV_VAR = "MYOSIN_CACHE_BASE_PATH"
 
 
 class StateModel(BaseModel):

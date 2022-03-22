@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: install modelio
+      - name: install myosin
         run: |
           python3 -m pip install .
-          python3 -c 'import modelio; print(modelio.__version__)'
+          python3 -c 'import myosin; print(myosin.__version__)'

@@ -3,9 +3,9 @@ import logging
 from typing import Any, Dict
 from datetime import datetime
 
-from modelio import _PKey
-from modelio import StateModel
-from modelio import State
+from myosin import _PKey
+from myosin import StateModel
+from myosin import State
 
 
 class User(StateModel):
@@ -73,7 +73,7 @@ class Telemetry(StateModel):
 
 
 if __name__ == "__main__":
-    os.environ['MODELIO_CACHE_BASE_PATH'] = "tests/cache"
+    os.environ['MYOSIN_CACHE_BASE_PATH'] = "tests/cache"
     logging.basicConfig(level=logging.DEBUG)
     _log = logging.getLogger(__name__)
 

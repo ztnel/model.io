@@ -1,7 +1,7 @@
-# Model.io
-[![ci](https://github.com/ztnel/model.io/actions/workflows/ci.yaml/badge.svg)](https://github.com/ztnel/model.io/actions/workflows/ci.yaml)
+# Mysosin: A Lightweight State Management Engine
+[![ci](https://github.com/ztnel/myosin/actions/workflows/ci.yaml/badge.svg)](https://github.com/ztnel/myosin/actions/workflows/ci.yaml)
 
-Modified: 2021-10
+Modified: 2022-03
 
 Lightweight state management engine.
 

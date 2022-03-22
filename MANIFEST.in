@@ -1,5 +1,5 @@
-# include all files in the modelio module
-graft modelio
+# include all files in myosin base
+graft myosin 
 
 # exclude all compiler artefacts
 global-exclude *.py[co]
