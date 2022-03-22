@@ -1,6 +1,7 @@
 # Myosin
 [![myosin](https://badge.fury.io/py/myosin.svg)](https://pypi.org/project/myosin/)
 [![ci](https://github.com/ztnel/myosin/actions/workflows/ci.yaml/badge.svg)](https://github.com/ztnel/myosin/actions/workflows/ci.yaml)
+[![codecov](https://codecov.io/gh/ztnel/myosin/branch/master/graph/badge.svg?token=G2DNQAGVIP)](https://codecov.io/gh/ztnel/myosin)
 
 Modified: 2022-03
 
