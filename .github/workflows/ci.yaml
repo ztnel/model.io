@@ -13,6 +13,20 @@ on:
       - master
 
 jobs:
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+      - name: Install dependancies
+        run: |
+          python3 -m pip install -r tests/requirements.txt
+          python3 -m pip install -r requirements.txt
+      - name: Run tests and collect coverage
+        run: nosetests 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
   lint:
     name: flake8 lint
     runs-on: ubuntu-latest
