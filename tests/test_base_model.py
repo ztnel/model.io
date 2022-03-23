@@ -14,7 +14,12 @@ from myosin.models.base import BaseModel
 
 class TestBaseModel(unittest.TestCase):
 
-    @patch.multiple(BaseModel, __abstractmethods__=set(), serialize=MagicMock())
+    @patch.multiple(
+        BaseModel,
+        __abstractmethods__=set(),
+        serialize=MagicMock(),
+        deserialize=MagicMock()
+    )
     def setUp(self) -> None:
         logging.disable()
         self.base = BaseModel(1)  # type: ignore
