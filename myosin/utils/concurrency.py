@@ -5,6 +5,7 @@ Concurrency Utils
 Modified: 2022-03
 """
 
+import logging
 from threading import Lock
 from typing import Callable, TypeVar
 
@@ -13,6 +14,7 @@ _T = TypeVar('_T')
 
 class ThreadUtils:
 
+    _logger = logging.getLogger(__name__)
     state_lock = Lock()
 
     @classmethod
