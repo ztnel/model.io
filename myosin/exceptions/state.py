@@ -11,6 +11,11 @@ class StateException(Exception):
         self.message = msg
 
 
+class HashNotFound(StateException):
+    def __init__(self, msg: str = "The input model has an unexpected typehash") -> None:
+        super().__init__(msg=msg)
+
+
 class NullCheckoutError(StateException):
     def __init__(self, msg: str = "The requested model does not exist in state registry") -> None:
         super().__init__(msg=msg)
