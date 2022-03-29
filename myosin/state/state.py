@@ -21,9 +21,9 @@ import asyncio
 import traceback
 from typing import Any, Coroutine, Dict, Tuple, Type, TypeVar, Callable, List
 from myosin.utils.funcs import pformat
-from myosin.utils.concurrency import ThreadUtils as tutils
-from myosin.exceptions.state import NullCheckoutError
 from myosin.models.state import StateModel
+from myosin.exceptions.state import NullCheckoutError
+from myosin.utils.concurrency import ThreadUtils as tutils
 
 # generic runtime model type
 _T = TypeVar('_T', bound=StateModel)

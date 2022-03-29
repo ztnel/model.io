@@ -33,8 +33,8 @@ class StateModel(BaseModel):
         """
         Serialize contents and save to cache as a json file
 
-        :raises NullCachePathError: _description_
-        :raises CachePathError: _description_
+        :raises NullCachePathError: if cache base path is not set 
+        :raises CachePathError: if cache base path is not valid
         """
         if not self.cache_base_path:
             raise NullCachePathError(
