@@ -1,5 +1,8 @@
 import os
+import uuid
 import logging
+from threading import Thread
+import time
 from typing import Any, Dict
 from datetime import datetime
 
@@ -72,6 +75,21 @@ class Telemetry(StateModel):
             setattr(self, k, v)
 
 
+class Runner:
+    def __init__(self) -> None:
+        self.username = ""
+        with State() as state:
+            state.subscribe(User, self.update)
+
+    async def update(self, usr: User) -> None:
+        self.username = usr.name
+
+    def run(self):
+        while True:
+            time.sleep(1)
+            print(f"This is my username: {self.username}")
+
+
 if __name__ == "__main__":
     os.environ['MYOSIN_CACHE_BASE_PATH'] = "tests/cache"
     logging.basicConfig(level=logging.DEBUG)
@@ -109,3 +127,13 @@ if __name__ == "__main__":
         telemetry = state.checkout(Telemetry)
         telemetry.tp = 45.0
         state.commit(telemetry, cache=True)
+
+    # test state model subscriptions
+    _runner = Runner()
+    Thread(target=_runner.run, args=(), daemon=True).start()
+    while True:
+        time.sleep(1)
+        with State() as state:
+            usr = state.checkout(User)
+            usr.name = str(uuid.uuid4())
+            state.commit(usr)
