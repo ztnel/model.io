@@ -76,6 +76,17 @@ class State:
 
     @tutils.lock(tutils.state_lock)
     def commit(self, state: _T, cache: bool = False) -> _T:
+        """
+        Commit new state to system state and update state subscriber callbacks
+
+        :param state: modified copy of state
+        :type state: _T
+        :param cache: cache the state to disk once updated, defaults to False
+        :type cache: bool, optional
+        :raises HashNotFound: if system state has no state registered of the requested type 
+        :return: updated system state reference
+        :rtype: _T
+        """
         # automatic type inference by typehash
         _type_hash = hash(type(state))
         # verify typehash
