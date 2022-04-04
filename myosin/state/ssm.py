@@ -56,7 +56,7 @@ class SSM(Generic[_S]):
         self._logger.debug("%s Subscriber operations: %s", type(self.ref).__name__, operations)
         # filter by operations which yielded an exception
         exceptions: List[Tuple[str, Exception]] = list(
-            filter(lambda x: x[1] is not None, operations))
+            filter(lambda x: type(x[1]) is BaseException, operations))
         for func, exc in exceptions:
             self._logger.exception("Subscriber function: %s encountered an exception: %s", func,
                                    "".join(traceback.format_exception(
