@@ -22,6 +22,9 @@ class BaseModel(ABC):
     def __typehash__(self) -> int:
         return hash(type(self))
 
+    def __hash__(self) -> int:
+        return super().__hash__()
+
     def __eq__(self, o: object) -> bool:
         if hasattr(o, 'id') and hasattr(self, 'id'):
             return o.id == self.id  # type: ignore
