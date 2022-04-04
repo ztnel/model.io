@@ -86,7 +86,7 @@ class Runner:
 
     def run(self):
         while True:
-            time.sleep(1)
+            time.sleep(0.001)
             print(f"This is my username: {self.username}")
 
 
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     _runner = Runner()
     Thread(target=_runner.run, args=(), daemon=True).start()
     while True:
-        time.sleep(1)
+        time.sleep(0.001)
         with State() as state:
             usr = state.checkout(User)
             usr.name = str(uuid.uuid4())
