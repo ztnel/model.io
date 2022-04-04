@@ -63,6 +63,5 @@ class TestBaseModel(unittest.TestCase):
         """
         Test base model id get/set
         """
-        self.assertEqual(self.base.id, 1)
         self.base.id = 2
         self.assertEqual(self.base.id, 2)
