@@ -29,6 +29,12 @@ class TestBaseModel(unittest.TestCase):
         del self.base
         logging.disable(logging.NOTSET)
 
+    def test_hash(self):
+        """
+        Test hashing
+        """
+        self.assertNotEqual(self.base.__hash__(), self.comparator.__hash__())
+
     def test_typehash(self):
         """
         Test type hashing
