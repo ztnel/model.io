@@ -8,12 +8,12 @@ Modified: 2022-04
 
 import unittest
 import logging
-
+from unittest.mock import patch
 from tests.resources.models import DemoState
 
 from myosin import State
 from myosin.state.ssm import SSM
-from myosin.exceptions.state import NullCheckoutError, UninitializedStateError
+from myosin.exceptions.state import HashNotFound, NullCheckoutError, UninitializedStateError
 
 
 class TestState(unittest.TestCase):
@@ -27,6 +27,12 @@ class TestState(unittest.TestCase):
     def tearDown(self) -> None:
         logging.disable(logging.NOTSET)
         self.state.reset()
+
+    def mock_loader(self):
+        """
+        State loading helper to remove interdependancy of testing methods
+        """
+        self.state._ssm[self.test_state.__typehash__()] = SSM[DemoState](self.test_state)
 
     def test_uninitialized_load(self):
         """
@@ -60,7 +66,21 @@ class TestState(unittest.TestCase):
         """
         Test checkout copy
         """
-        # avoid testing loading directly
-        self.state._ssm[self.test_state.__typehash__()] = SSM[DemoState](self.test_state)
+        self.mock_loader()
         test_state = self.state.checkout(DemoState)
         self.assertNotEqual(hash(test_state), hash(self.test_state))
+
+    def test_unregistered_commit(self):
+        """
+        Test unregistered state commit
+        """
+        with self.assertRaises(HashNotFound):
+            self.state.commit(self.test_state)
+
+    @patch('asyncio.run', lambda x: None)
+    def test_commit(self):
+        """
+        Test state commit
+        """
+        self.mock_loader()
+        self.state.commit(self.test_state)
