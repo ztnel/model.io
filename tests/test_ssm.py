@@ -10,15 +10,15 @@ import logging
 import asyncio
 from unittest.mock import AsyncMock
 from myosin.state.ssm import SSM
-from tests.resources.models import TestState
+from tests.resources.models import DemoState
 
 
 class TestSSM(unittest.TestCase):
 
     def setUp(self) -> None:
         logging.disable()
-        self.test_state = TestState(1)
-        self.ssm = SSM[TestState](self.test_state)
+        self.test_state = DemoState(1)
+        self.ssm = SSM[DemoState](self.test_state)
 
     def tearDown(self) -> None:
         del self.ssm
@@ -41,7 +41,7 @@ class TestSSM(unittest.TestCase):
         """
         Test reference object get/set
         """
-        new_state = TestState(2)
+        new_state = DemoState(2)
         self.ssm.ref = new_state
         self.assertEqual(self.ssm.ref, new_state)
 
@@ -49,7 +49,7 @@ class TestSSM(unittest.TestCase):
         """
         Test async queue callback get/set
         """
-        async def async_callback(_: TestState): ...
+        async def async_callback(_: DemoState): ...
         new_queue = [async_callback]
         self.ssm.queue = new_queue
         self.assertEqual(self.ssm.queue, new_queue)
