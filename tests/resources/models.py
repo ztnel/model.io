@@ -9,7 +9,7 @@ SERIALIZED_MODEL = {
 }
 
 
-class TestState(StateModel):
+class DemoState(StateModel):
 
     def __init__(self, _id) -> None:
         super().__init__(_id)
