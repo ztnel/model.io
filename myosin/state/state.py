@@ -1,19 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-State Manager
-=============
-Modified: 2021-05
-Dependancies
-------------
-```
-import logging
-import asyncio
-from monitor.models.icb import ICB
-from monitor.models.device import Device
-from monitor.models.protocol import Protocol
-from monitor.models.experiment import Experiment
-from monitor.models.imaging_profile import ImagingProfile
-```
+Myosin State Engine
+===================
+Modified: 2022-04
+
 """
 import asyncio
 import copy
@@ -24,8 +14,8 @@ from myosin.state.ssm import SSM
 from myosin.typing import AsyncCallback
 from myosin.utils.funcs import pformat
 from myosin.models.state import StateModel
-from myosin.exceptions.state import HashNotFound, NullCheckoutError
 from myosin.utils.concurrency import ThreadUtils as tutils
+from myosin.exceptions.state import HashNotFound, NullCheckoutError, UninitializedStateError
 
 # generic runtime model type
 _T = TypeVar('_T', bound=StateModel)
@@ -52,6 +42,11 @@ class State:
         :type model: StateModel
         """
         self._ssm[model.__typehash__()] = SSM[_T](model)
+        # assert the model attributes are initialized
+        try:
+            model.serialize()
+        except AttributeError as exc:
+            raise UninitializedStateError from exc
         self._logger.info("Loaded state model: %s", pformat(model.serialize()))
         return model
 
@@ -116,3 +111,9 @@ class State:
             self._logger.error("Subscribed typehash: %s did not match any state model", _type_hash)
             raise HashNotFound
         ssm.queue.append(callback)
+
+    def reset(self) -> None:
+        """
+        Reset all loaded state model
+        """
+        self._ssm.clear()
