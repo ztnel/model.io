@@ -13,7 +13,7 @@ Dependencies:
 import os
 import json
 from json import JSONDecodeError
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from myosin.exceptions.cache import CachePathError, NullCachePathError
 from myosin.typing import _PKey
@@ -24,7 +24,7 @@ BP_ENV_VAR = "MYOSIN_CACHE_BASE_PATH"
 
 class StateModel(BaseModel):
 
-    def __init__(self, _id: _PKey) -> None:
+    def __init__(self, _id: Optional[_PKey] = None) -> None:
         super().__init__(_id)
         self.cache_base_path = os.environ.get(BP_ENV_VAR)
         self._cpath = f'{self.cache_base_path}/{self.__class__.__name__}.json'

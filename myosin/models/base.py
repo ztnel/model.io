@@ -6,7 +6,8 @@ Modified: 2022-03
 """
 
 import logging
-from typing import Any, Dict
+import uuid
+from typing import Any, Dict, Optional
 from abc import ABC, abstractmethod
 
 from myosin.typing import _PKey
@@ -15,8 +16,10 @@ from myosin.utils.funcs import pformat
 
 class BaseModel(ABC):
 
-    def __init__(self, _id: _PKey) -> None:
+    def __init__(self, _id: Optional[_PKey] = None) -> None:
         self._logger = logging.getLogger(__name__)
+        if not _id:
+            _id = str(uuid.uuid4())
         self.id = _id
 
     def __typehash__(self) -> int:
@@ -26,12 +29,13 @@ class BaseModel(ABC):
         return super().__hash__()
 
     def __eq__(self, o: object) -> bool:
+        # NOTE: chance of collision if auto id is used (uuid4)
         if hasattr(o, 'id') and hasattr(self, 'id'):
             return o.id == self.id  # type: ignore
         return False
 
     def __repr__(self) -> str:
-        return "{}".format(pformat(self.serialize()))
+        return pformat(self.serialize())
 
     @property
     def id(self) -> _PKey:
@@ -48,7 +52,7 @@ class BaseModel(ABC):
         """
         Set state model id
 
-        :param _id: state model id 
+        :param _id: state model id
         :type _id: _PKey
         """
         self.__id = _id

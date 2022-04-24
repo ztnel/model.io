@@ -9,17 +9,15 @@ Lightweight & threadsafe state engine
 
 import logging
 
+from myosin.state import State
 from myosin.__version__ import __version__
-from myosin.typing import _PKey
 from myosin.models.base import BaseModel
 from myosin.models.state import StateModel
-from myosin.state import State
 
 __all__ = [
     '__version__',
     'BaseModel',
     'StateModel',
-    '_PKey',
     'State'
 ]
 

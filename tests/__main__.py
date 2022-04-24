@@ -6,14 +6,13 @@ import time
 from typing import Any, Dict
 from datetime import datetime
 
-from myosin import _PKey
 from myosin import StateModel
 from myosin import State
 
 
 class User(StateModel):
 
-    def __init__(self, _id: _PKey) -> None:
+    def __init__(self, _id: int) -> None:
         super().__init__(_id)
 
     @property
@@ -46,8 +45,8 @@ class User(StateModel):
 
 class Telemetry(StateModel):
 
-    def __init__(self, _id: _PKey) -> None:
-        super().__init__(_id)
+    def __init__(self) -> None:
+        super().__init__()
 
     @property
     def tp(self) -> float:
@@ -97,7 +96,7 @@ if __name__ == "__main__":
 
     u = User(_id=1)
     u.deserialize(**{'name': "chris", 'email': "chris@email.io"})
-    t = Telemetry(_id=1)
+    t = Telemetry()
     t.deserialize(**{'tp': 65.0})
     u.email = "bad"
     _log.info(u)
