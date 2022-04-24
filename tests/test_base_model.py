@@ -22,8 +22,10 @@ class TestBaseModel(unittest.TestCase):
     )
     def setUp(self) -> None:
         logging.disable()
+        # test set id
         self.base = BaseModel(1)  # type: ignore
-        self.comparator = BaseModel(2)  # type: ignore
+        # test unset id (autogeneration)
+        self.comparator = BaseModel()  # type: ignore
 
     def tearDown(self) -> None:
         del self.base
