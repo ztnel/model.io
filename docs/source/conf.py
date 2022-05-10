@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Myosin'
-copyright = '2022, ztnel'
-author = 'ztnel'
+copyright = '2022, Christian Sargusingh'
+author = 'Christian Sargusingh'
 
 # The full version, including alpha/beta/rc tags
 release = 'v0.1.1'
