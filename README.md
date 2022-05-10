@@ -95,7 +95,7 @@ with State() as state:
 Documentation coming soon
 
 ## Contributions
-Contributions are welcome. Please see the issue log and project kanban if you are unsure how to help.
+Contributions are welcome! Please see the [issue backlog](https://github.com/ztnel/myosin/issues) and [project kanban](https://github.com/ztnel/myosin/projects/1) for active work items or contact me at <a href="mailto:christian@leapsystems.online?">christian@leapsystems.online</a>.
 
 ## License
 This project is licensed under the terms of the [MIT License](LICENSE)
