@@ -1,7 +1,5 @@
 API Reference
 =============
 
-.. autosummary::
-    :recursive:
-
-   myosin
+.. automodule:: myosin.state.state
+   :members:
