@@ -2,7 +2,7 @@
 About
 =====
 
-Myosin is a lightweight state management framework for developing state-driven software systems. The term describes a biological motor protein which converts chemical energy into mechanical energy.
+Myosin is a lightweight state management framework for developing state-driven software systems.
 
 Why Myosin?
 -----------
@@ -31,7 +31,7 @@ Events are inherently contextless and therefore more events are required for dif
 Background
 ----------
 
-Myosin was originally designed to address software problems when developing embedded control systems with command and control capabilities from multiple external entities. 
+``Myosin`` was originally designed to address software problems when developing embedded control systems with command and control capabilities from multiple external entities. 
 
 Since state data handled by myosin we incidentally have a solution for application fault-tolerance. Myosin comes equipped with the ability to cache system state objects into persistant storage when a system state model is updated. If the application crashes and restarts, myosin will load the previously cached system state back into the system and trigger the appropriate subscriber functions to recover the system before it
 
@@ -41,7 +41,10 @@ The ``myosin`` engine is modelled off system environment variables. Environment 
 
 Strictly Typed API
 ~~~~~~~~~~~~~~~~~~
-Models loaded into ``myosin`` are strictly typed with property getters and setters on each field. All myosin functions are strictly typed for intellisense and static type analysis tools like Pylance.
+All myosin functions for access and modification to system state variables are strictly typed for intellisense and static type analysis tools like ``Pylance`` making the programming with ``myosin`` easy and error-free. Type accuracy for state models are left to the developer. It is highly encouraged that all state models loaded into ``myosin`` are strictly typed with property getters and setters for each field to leverage the full typing capabilities.
+
+.. image:: ../_static/typing.gif
+    :align: center
 
 Fully Permissive
 ~~~~~~~~~~~~~~~~
@@ -49,39 +52,16 @@ Any software component can access and subscribe to system state models agnostic 
 
 Thread Safety
 ~~~~~~~~~~~~~
-Access to state models are fully thread-safe and support concurrent read and write operations to the system state. Access to myosin state models are done using the checkout mechanic and state model writes are done using state commits
+Access to state models are fully thread-safe and support concurrent read and write operations to the system state. Access to myosin state models are done using the deep copies (pass by value) of the true system state. Modification . and state model writes are done using state commits which are thread locked overwrites of the true system state.
 
-#. Lightweight: Small dependancy tree and low operating footprint
+Lightweight
+~~~~~~~~~~~
+``Myosin`` is programmed exclusively using python's stdlib from 3.7 onwards. The combination of a small dependancy tree and simple implementation improves application security and resiliency.
 
 Core Features
 ~~~~~~~~~~~~~
 #. Built-in application state recovery.
 #. Support for singleton object storage.
-#. Support for custom validation before state writes are
+#. Support for custom state validation.
 #. State-driven Asynchronous callback triggers
-
-Design
-======
-
-In order to make the state manager thread  safe and guard against saving potentially invalid states I will divide the module-state interaction as a two layer process:
-1. Runtime Layer - Holds the system runtime models as they represent the current state
-2. Checkout Layer - Generates copies of runtime models to distribute externally for modification
-
-
-
-
-Checkout
-~~~~~~~~
-
-An external module makes a request to the state manager to create a copy of a loaded runtime model. The state manager accesses the runtime layer and generates a copy of the requested model and forwards it to the external module. The module can make any changes it wants to that module copy and it will not affect the system state. This is desired because the state changes must be validated by the state manager before the state is modified (this includes sending state changes to the firmware to ensure they are accepted since these are independant systems). Remember if a bad state change is saved into the runtime layer, another async request has the potential to read a bad state.
-
-Configuration
-~~~~~~~~~~~~~
-
-The checked-out copy of the runtime model can then be configured and potentially even malformed with no affect to the state. If something goes wrong during the checkout the copy will simply be dereferenced by the stack as a local variable. The runtime model will have a set of preconditions to validate all setter attributes.
-
-State Commit
-~~~~~~~~~~~~
-
-Once the desired state changes have been made we can commit our modified copy to the system for state-level validation. The state manager will first apply our modified model to the firmware and try to see if the values are accepted. If the changes are accepted it will immediately update the runtime model and perform callbacks on all registered subscribers to that models state changes. Some models such as `Device` and `Experiment` models may not require any additional validation that extends the preconditions in which case commit will simply skip the firmware validation phase. Once all subscribers are updated with the change the cache is written with the new runtime model state.
 
