@@ -13,13 +13,6 @@ To use ``myosin``, install it using pip:
    python3 -m pip install myosin
 
 
-State Model
-~~~~~~~~~~~
-A state model is a python class that has the following properties:
-
-
-Design
-======
 
 In order to make the state manager thread  safe and guard against saving potentially invalid states I will divide the module-state interaction as a two layer process:
 1. Runtime Layer - Holds the system runtime models as they represent the current state
