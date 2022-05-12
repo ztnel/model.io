@@ -7,4 +7,5 @@
    about
    usage
    api
+   myosin
    examples
