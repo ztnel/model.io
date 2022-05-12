@@ -3,6 +3,6 @@ Myosin API Reference
 
 .. autosummary::
     :recursive:
-    :toctree: generated
+    :toctree: DIRNAME
 
    myosin
