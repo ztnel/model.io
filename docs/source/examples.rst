@@ -51,7 +51,7 @@ Let's suppose on any change to `tp`, `lux`, `rh` `sm` and `ts` keys we want to r
 
     class CloudInterface:
 
-        def report_telemetry():
+        def report_telemetry
 
     class ApiInterface:
         def __init__(self):
