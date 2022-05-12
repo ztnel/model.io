@@ -2,6 +2,7 @@ Myosin API Reference
 ====================
 
 .. autosummary::
-   :toctree: generated
+    :recursive:
+    :toctree: generated
 
    myosin
