@@ -6,4 +6,5 @@
    
    about
    usage
+   api
    examples
