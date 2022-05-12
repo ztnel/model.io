@@ -2,4 +2,6 @@ API Reference
 =============
 
 .. automodule:: myosin.state.state
-   :members:
+    :members:
+    :undoc-members:
+    :show-inheritance:
