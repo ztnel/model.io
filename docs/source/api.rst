@@ -1,7 +1,8 @@
-Myosin API Reference
+API Reference
 ====================
 
 .. autosummary::
+    :toctree: _autosummary
     :recursive:
 
    myosin
