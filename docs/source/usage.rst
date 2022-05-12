@@ -1,22 +1,46 @@
 Usage
 =====
 
-.. _installation:
+Requirements
+------------
+
+Some features of ``myosin`` are only supported on POSIX compliant systems. Cross-platform support for all features is not being pursued. ``Myosin`` is only tested against Python ``3.7``, ``3.8`` and ``3.9``. Support for other versions will be supported in the future.
 
 Installation
 ------------
 
-To use ``myosin``, install it using pip:
+To use ``myosin`` install it using pip:
 
 .. code-block:: console
 
    python3 -m pip install myosin
 
+Alternatively you can build from source:
+
+.. code-block:: console
+
+   git clone git@github.com:ztnel/myosin.git
+   cd myosin
+   python3 -m pip install .
 
 
-In order to make the state manager thread  safe and guard against saving potentially invalid states I will divide the module-state interaction as a two layer process:
-1. Runtime Layer - Holds the system runtime models as they represent the current state
-2. Checkout Layer - Generates copies of runtime models to distribute externally for modification
+Testing
+-------
+
+Unittests can be executed locally by cloning ``myosin`` and installing the testing requirements:
+
+.. code-block:: console
+
+   git clone git@github.com:ztnel/myosin.git
+   cd myosin
+   python3 -m pip install tests/requirements.txt
+
+Run the tests using ``nosetests``
+.. code-block:: console
+
+   nosetests
+
+The test runner will report the executed tests and generate a coverage report.
 
 
 
