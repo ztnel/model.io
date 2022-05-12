@@ -43,52 +43,6 @@ class User(StateModel):
             setattr(self, k, v)
 
 
-class Telemetry(StateModel):
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    @property
-    def tp(self) -> float:
-        return self.__tp
-
-    @tp.setter
-    def tp(self, value: float) -> None:
-        self.__tp = value
-
-    @property
-    def timestamp(self) -> float:
-        return datetime.now().timestamp()
-
-    def serialize(self) -> Dict[str, Any]:
-        return {
-            'id': self.id,
-            'temp': self.tp,
-            'timestamp': self.timestamp
-        }
-
-    def deserialize(self, **kwargs) -> None:
-        for k, v in kwargs.items():
-            if k == "timestamp":
-                continue
-            setattr(self, k, v)
-
-
-class Runner:
-    def __init__(self) -> None:
-        self.username = ""
-        with State() as state:
-            state.subscribe(User, self.update)
-
-    async def update(self, usr: User) -> None:
-        self.username = usr.name
-
-    def run(self):
-        while True:
-            time.sleep(0.001)
-            print(f"This is my username: {self.username}")
-
-
 if __name__ == "__main__":
     os.environ['MYOSIN_CACHE_BASE_PATH'] = "tests/cache"
     logging.basicConfig(level=logging.DEBUG)
