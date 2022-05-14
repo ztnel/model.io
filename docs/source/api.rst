@@ -11,12 +11,12 @@ API Reference
     :undoc-members:
     :show-inheritance:
 
-.. autoclass:: myosin.state.base.BaseModel
+.. autoclass:: myosin.models.base.BaseModel
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. autoclass:: myosin.state.state.StateModel
+.. autoclass:: myosin.models.state.StateModel
     :members:
     :undoc-members:
     :show-inheritance:
