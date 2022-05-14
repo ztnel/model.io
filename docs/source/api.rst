@@ -1,22 +1,22 @@
 API Reference
 =============
 
-.. automodule:: myosin.state.state
+.. autoclass:: myosin.state.state.State
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: myosin.state.ssm
+.. autoclass:: myosin.state.ssm.SSM
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: myosin.state.base
+.. autoclass:: myosin.state.base.BaseModel
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: myosin.state.state
+.. autoclass:: myosin.state.state.StateModel
     :members:
     :undoc-members:
     :show-inheritance:
