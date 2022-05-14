@@ -86,24 +86,24 @@ In a consumer module you can access the global ``User`` model by checking out a 
 
 .. code-block:: python
 
-    with State() as state:
-        # checkout a copy of the user state model
-        user = state.checkout(User)
-    # read properties from the user state model
-    logging.info("Username: %s", user.name)
+   with State() as state:
+      # checkout a copy of the user state model
+      user = state.checkout(User)
+   # read properties from the user state model
+   logging.info("Username: %s", user.name)
 
 
 In a producer module you can commit to the global ``User`` model by first checking out a copy of the model, modifying it and requesting a commit:
 
 .. code-block:: python
 
-    with State() as state:
-        # checkout a copy of the user state model
-        user = state.checkout(User)
-        # modify user state model copy
-        user.name = "cS"
-        # commit the modified copy
-        state.commit(user)
+   with State() as state:
+      # checkout a copy of the user state model
+      user = state.checkout(User)
+      # modify user state model copy
+      user.name = "cS"
+      # commit the modified copy
+      state.commit(user)
 
 Testing
 -------
@@ -116,13 +116,13 @@ Unittests can be executed locally by cloning ``myosin`` and installing the testi
    cd myosin
    python3 -m pip install tests/requirements.txt
 
-Run the tests using ``nosetests``
+Run the tests using the ``nosetests`` utility:
+
 .. code-block:: console
 
    nosetests
 
-The test runner will report the executed tests and generate a coverage report.
-
+The test runner will report the executed tests and generate a coverage report. The coverage goal for this library is 95% or greater. If you want to contribute and don't know how, this is a great place to start.
 
 
 Checkout
