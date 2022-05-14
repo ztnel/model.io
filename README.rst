@@ -16,13 +16,14 @@ Myosin
     :target: https://myosin.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+
 Modified: 2022-03
 
-Lightweight state management engine.
+A lightweight state management framework.
 
 About
 -----
-State-driven software architectures are useful for allowing multiple modules to be able to communicate using the same base syntax. The syntax for communication of data is implemented through the state models which represent the the states of different components of the software.
+
 
 Quickstart
 ----------
@@ -31,8 +32,6 @@ Install `myosin` from pip
 .. code-block:: bash
 
     python3 -m pip install myosin
-
-
 
 
 Contributing
