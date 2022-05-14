@@ -7,19 +7,21 @@ Myosin is a lightweight state management framework for developing state-driven s
 Why Myosin?
 -----------
 
-State-driven systems are useful for allowing multiple software components within an application to communicate using the same language. The syntax for communication of data is implemented through the state models which are object-oriented representations of the system state.
+State-driven architectures enable development of more intelligent software components. are useful for allowing multiple software components within an application to communicate using the same language. The syntax for communication of data is implemented through the state models which are object-oriented representations of the system state. 
 
-Traditionally, embedded systems use `event-driven architectures <https://en.wikipedia.org/wiki/Event-driven_architecture>`_ for synchronizing state changes across multiple software components. Event driven solutions, while simple to implement do not scale well for handling bidirectional data transfer with multiple contexts.
+Traditionally, embedded systems use `event-driven architectures <https://en.wikipedia.org/wiki/Event-driven_architecture>`_ for synchronizing state changes across multiple software components. Event driven solutions, while simple to implement do not scale well for handling bidirectional data transfer.
 
-For example, imagine we have an embedded system with three software components. A UART Interface for communicating with an embedded firmware device, a Cloud Link component for providing a real-time data stream to a cloud service and a User Interface Controller for updating an embedded GUI. 
+For example, imagine a typical embedded system with three software components:
+#. **UART Interface** - Communicates with a microcontroller
+#. **Cloud Link** - Streams telemetry to a cloud service
+#. **User Interface Controller** - Updates an embedded GUI. 
 
 .. image:: ../_static/event.png
     :align: center
 
-The Cloud Link and User Interface operate with their own control loops and digest new sensorframe payloads through the SENSORFRAME event dispatched by the UART Interface. In order to provide real-time telemetric updates both the Cloud Link and User Interface store previously cached sensorframe payloads and update their values when a SENSORFRAME event is received and a delta is detected between any of the sensorframe keys. In this model, state data is duplicated and can be out of sync across components. Data integrity is compromised as there is no source of truth for sensorframe updates except by the most recent event payload. If the event payload is implemented as a dictionary then unpacking of event payloads is also duplicated across components and not reusable across different event payloads.
+The Cloud Link and User Interface operate with their own control loops and digest new telemetry payloads from the ``SENSORFRAME`` event dispatched by the UART Interface. In this model, data integrity is limited as there is no universal reference for the most recent telemetry except from the most recent ``SENSORFRAME`` payload. If the event payload is implemented as a dictionary then unpacking of event payloads is also duplicated across components and not reusable across different event payloads.
 
-
-Myosin acts as a datastore system state models. A state model (Sensorframe) is registered and loaded into myosin as a python object on boot. This object holds properties describing the state. As the UART Interface updates the system with a new sensorframe reading it commits a new sensorframe instance to myosin. The advantage of this is that a state has a source of truth. Each module with a control loop can simply poll the state from myosin checking out a copy of the active state model. The major benefit in this architecture is the consistent universal access to system state variables. Each property in a python object can have custom typing and validation checks. Any access rules implemented at the property level are universal to any component accessing that state property.
+The ``myosin`` framework is modelled off system environment variables. Environment variables are fully permissive and describe the context for a software runtimes. ``Myosin`` mimics an environment variable manager for strictly typed python objects called ``StateModels`` which describes a component of the software system. A ``StateModel`` such as a (Sensorframe) is registered and loaded into myosin as a python object on boot. This object holds properties describing the state. As the UART Interface updates the system with a new sensorframe reading it commits a new sensorframe instance to myosin. The advantage of this is that a state has a source of truth. Each module with a control loop can simply poll the state from myosin checking out a copy of the active state model. The major benefit in this architecture is the consistent universal access to system state variables. Each property in a python object can have custom typing and validation checks. Any access rules implemented at the property level are universal to any component accessing that state property.
 
 .. image:: ../_static/state.png
     :align: center
@@ -37,7 +39,7 @@ Since state data handled by myosin we incidentally have a solution for applicati
 
 Philosophy
 ----------
-The ``myosin`` engine is modelled off system environment variables. Environment variables are fully permissive and describe the context for a software runtimes. ``Myosin`` mimics an environment variable manager for strictly typed python objects called ``StateModels`` which describes a component of the software system. These ``StateModels`` 
+
 
 Strictly Typed API
 ~~~~~~~~~~~~~~~~~~
@@ -48,7 +50,7 @@ All myosin functions for access and modification to system state variables are s
 
 Fully Permissive
 ~~~~~~~~~~~~~~~~
-Any software component can access and subscribe to system state models agnostic of your projects hierarchical structure. Simply import ``myosin`` from anywhere and get access to the systems state.
+Any software component can access and subscribe to system state models agnostic of your projects hierarchical structure. Simply import ``myosin`` from anywhere to get access to the systems state descriptors. This allows any individual software components to house custom logic that is informed by the real-time state of the system as a whole.
 
 Thread Safety
 ~~~~~~~~~~~~~
@@ -59,9 +61,10 @@ Lightweight
 ``Myosin`` is programmed exclusively using python's stdlib from 3.7 onwards. The combination of a small dependancy tree and simple implementation improves application security and resiliency.
 
 Core Features
-~~~~~~~~~~~~~
+-------------
 #. Built-in application state recovery.
 #. Support for singleton object storage.
 #. Support for custom state validation.
 #. State-driven Asynchronous callback triggers
+#. Thread-safe accessors
 

@@ -30,7 +30,6 @@ Start by defining a model by creating a class that implements `StateModel`:
 
 .. code-block:: python
 
-
    from myosin import StateModel
 
    class User(StateModel):

@@ -8,4 +8,3 @@
    about
    usage
    api
-   examples
