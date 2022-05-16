@@ -17,8 +17,6 @@ Myosin
     :alt: Documentation Status
 
 
-A lightweight framework for building state-driven software systems.
-
 About
 -----
 *Myosin* is a lightweight framework for developing state-driven software systems. *Myosin* was originally designed to address scaling problems when developing embedded control systems with bidirectional command and control capabilities.
