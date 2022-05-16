@@ -5,7 +5,7 @@ About
 *Myosin* is a lightweight framework for developing state-driven software systems. *Myosin* was originally designed to address scaling problems when developing embedded control systems with bidirectional command and control capabilities. Namely between an embedded microcontroller and any number of monitoring services.
 
 Why *Myosin*?
------------
+-------------
 
 State-driven architectures allow for the development of more intelligent software components. *Myosin* facilitates system state descriptor communication between software components using the same language. The syntax for communication of data is implemented through the state models which are object-oriented representations of the system state.
 
