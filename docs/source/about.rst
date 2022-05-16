@@ -10,6 +10,7 @@ State-driven architectures allow for the development of more intelligent softwar
 Traditionally, embedded systems use `event-driven architectures <https://en.wikipedia.org/wiki/Event-driven_architecture>`_ for synchronizing state changes across multiple software components. Event driven solutions, while simple to implement do not scale well for handling bidirectional data transfer.
 
 For example, picture a typical embedded system with three software components:
+
 #. **UART Interface** - Communicates with a microcontroller
 #. **Cloud Link** - Streams telemetry to a cloud service
 #. **User Interface Controller** - Updates an embedded GUI. 
