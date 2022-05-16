@@ -17,22 +17,22 @@ Myosin
     :alt: Documentation Status
 
 
-Modified: 2022-03
-
-A lightweight state management framework.
+A lightweight framework for building state-driven software systems.
 
 About
 -----
+*Myosin* is a lightweight framework for developing state-driven software systems. *Myosin* was originally designed to address scaling problems when developing embedded control systems with bidirectional command and control capabilities.
 
+Core Features
+~~~~~~~~~~~~~
+#. Easy to use and customize
+#. Thread-safe Runtime Accessors
+#. State-driven Subscriber Queue
+#. Strictly Typed API
+#. Builtin Software Fault-Tolerance
+#. Built Exclusively using Python Standard Libraries
 
-Quickstart
-----------
-Install `myosin` from pip
-
-.. code-block:: bash
-
-    python3 -m pip install myosin
-
+Visit the `documentation page <myosin.readthedocs.io>`_ to learn more.
 
 Contributing
 ------------
