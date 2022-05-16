@@ -32,7 +32,7 @@ Core Features
 #. Builtin Software Fault-Tolerance
 #. Built Exclusively using Python Standard Libraries
 
-Visit the `documentation page <myosin.readthedocs.io>`_ to learn more.
+Visit the `documentation page <https://myosin.readthedocs.io>`_ to learn more.
 
 Contributing
 ------------
