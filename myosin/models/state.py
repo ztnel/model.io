@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-State Model Abstract
-====================
-Modified: 2021-12
+State Model
+===========
 
-Dependencies:
--------------
-```
-```
+Modified: 2022-05
+
 """
 
 import os
