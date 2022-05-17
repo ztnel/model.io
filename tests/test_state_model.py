@@ -99,3 +99,7 @@ class TestStateModel(unittest.TestCase):
         exists.return_value = True
         self.state.clear()
         remove.assert_called_once_with(self.state._cpath)
+        remove.reset_mock()
+        exists.return_value = False
+        self.state.clear()
+        remove.assert_not_called()
