@@ -5,8 +5,9 @@ State Model Unittests
 Modified: 2022-03
 """
 
-import builtins
+import os
 import json
+import builtins
 import unittest
 import logging
 from unittest.mock import MagicMock, patch, mock_open
@@ -81,10 +82,20 @@ class TestStateModel(unittest.TestCase):
     @patch.object(json, 'load')
     @patch('builtins.open', mock_open())
     @patch.object(StateModel, 'deserialize')
-    def test_load(self, load: MagicMock, deserialize: MagicMock):
+    def test_load(self, deserialize: MagicMock, load: MagicMock):
         """
         Test loading mechanism
         """
         self.state.load()
         load.assert_called_once()
         deserialize.assert_called_once()
+
+    @patch.object(os.path, 'exists')
+    @patch.object(os, 'remove')
+    def test_clear(self, remove: MagicMock, exists: MagicMock):
+        """
+        Test cache clearing mechanism
+        """
+        exists.return_value = True
+        self.state.clear()
+        remove.assert_called_once_with(self.state._cpath)
