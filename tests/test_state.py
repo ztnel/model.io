@@ -8,7 +8,8 @@ Modified: 2022-04
 
 import unittest
 import logging
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+from myosin.models.state import StateModel
 from tests.resources.models import DemoState
 
 from myosin import State
@@ -26,7 +27,8 @@ class TestState(unittest.TestCase):
 
     def tearDown(self) -> None:
         logging.disable(logging.NOTSET)
-        self.state.reset()
+        self.state._ssm.clear()
+        del self.state
 
     def mock_loader(self):
         """
@@ -40,6 +42,14 @@ class TestState(unittest.TestCase):
         """
         with self.assertRaises(UninitializedStateError):
             self.state.load(self.test_state)
+
+    def test_cm_lock(self):
+        """
+        Test state lock aquisition and release in context
+        """
+        with State() as state:
+            self.assertTrue(state.state_lock.locked())
+        self.assertFalse(state.state_lock.locked())
 
     def test_load(self):
         """
@@ -84,3 +94,12 @@ class TestState(unittest.TestCase):
         """
         self.mock_loader()
         self.state.commit(self.test_state)
+
+    @patch.object(StateModel, 'clear')
+    def test_clear(self, clear: MagicMock):
+        """
+        Test state model clear
+        """
+        self.mock_loader()
+        self.state.reset()
+        clear.assert_called_once()
