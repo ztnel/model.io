@@ -12,9 +12,9 @@ import json
 from json import JSONDecodeError
 from typing import Any, Dict, Optional
 
-from myosin.exceptions.cache import CachePathError, NullCachePathError
 from myosin.typing import _PKey
 from myosin.models.base import BaseModel
+from myosin.exceptions.cache import CachePathError, NullCachePathError
 
 BP_ENV_VAR = "MYOSIN_CACHE_BASE_PATH"
 
@@ -57,3 +57,11 @@ class StateModel(BaseModel):
         else:
             self.deserialize(**device_payload)
             self._logger.debug("Loaded state model: %s", self)
+
+    def clear(self) -> None:
+        """
+        Remove the cached json file associated with this model
+        """
+        if os.path.exists(self._cpath):
+            os.remove(self._cpath)
+            self._logger.debug("Removed cached document: %s", self._cpath)
