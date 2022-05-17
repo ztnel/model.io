@@ -118,6 +118,6 @@ class State:
         Reset all loaded state models and clear cached documents
         """
         for _, ssm in self._ssm.items():
-            ssm.ref.remove()
+            ssm.ref.clear()
         self._ssm.clear()
         self._logger.debug("Reset system state")
