@@ -9,7 +9,7 @@ NAME = 'myosin'
 DESCRIPTION = 'Lightweight state management engine for posix compliant systems'
 EMAIL = 'christian@leapsystems.online'
 AUTHOR = 'Christian Sargusingh'
-REQUIRES_PYTHON = '>=3.7.0'
+REQUIRES_PYTHON = '>=3.8.0'
 VERSION = False
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -55,6 +55,9 @@ setup(
         'Operating System :: Unix',
         'Topic :: Software Development :: Object Brokering',
         'Topic :: Software Development :: Embedded Systems',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 3.8'
+        'Programming Language :: Python :: 3.9'
+        'Programming Language :: Python :: 3.10'
+        'License :: OSI Approved :: MIT License',
     ],
 )

@@ -3,7 +3,8 @@ name: ci
 on:
   push:
     paths-ignore:
-      - "README.md"
+      - "README.rst"
+      - ".readthedocs.yaml"
       - "docs/**"
     branches:
       - master
@@ -13,20 +14,6 @@ on:
       - master
 
 jobs:
-  coverage:
-    name: coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the codebase.
-        uses: actions/checkout@v2
-      - name: Install dependancies
-        run: |
-          python3 -m pip install -r tests/requirements.txt
-          python3 -m pip install -r requirements.txt
-      - name: Run tests and collect coverage
-        run: nosetests 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
   lint:
     name: flake8 lint
     runs-on: ubuntu-latest
@@ -41,16 +28,38 @@ jobs:
         run: python3 -m pip install flake8
       - name: flake8
         run: flake8
-  pip:
-    name: python package install
+  unittest:
+    name: unittest and code coverage
+    needs: lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: set up python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: install dependancies
+        run: |
+          python3 -m pip install -r tests/requirements.txt
+          python3 -m pip install -r requirements.txt
+      - name: run tests and collect coverage
+        run: nosetests 
+      - name: upload coverage to codecov
+        uses: codecov/codecov-action@v2
+  package:
+    name: python package install
+    needs: lint
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: set up python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
