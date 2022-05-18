@@ -4,8 +4,9 @@ from myosin import StateModel
 
 class System(StateModel):
 
-    def __init__(self, id) -> None:
-        super().__init__(id)
+    def __init__(self) -> None:
+        super().__init__()
+        self.online = False
 
     @property
     def online(self) -> bool:

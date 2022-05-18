@@ -5,8 +5,11 @@ from myosin import StateModel
 
 class Telemetry(StateModel):
 
-    def __init__(self) -> None:
+    DEFAULT_TP = 25.5
+
+    def __init__(self, tp: float = DEFAULT_TP) -> None:
         super().__init__()
+        self.tp = tp
 
     @property
     def tp(self) -> float:
