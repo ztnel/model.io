@@ -10,7 +10,7 @@ import asyncio
 from typing import Dict
 import unittest
 import logging
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
 from myosin.models.state import StateModel
 from tests.resources.models import DemoState
 
@@ -137,6 +137,26 @@ class TestState(unittest.TestCase):
         self.mock_loader()
         self.state.reset()
         clear.assert_called_once()
+
+    def test_subscription_hash_not_found(self):
+        """
+        Test subscription on unregistered state model
+        """
+        async def callback(demo: DemoState) -> None: ...
+        mock_ssm = self.mock_ssm(self.state._ssm)
+        mock_ssm.get.return_value = None
+        with self.assertRaises(HashNotFound):
+            self.state.subscribe(DemoState, callback)
+
+    @patch.object(SSM, 'queue', new_callable=PropertyMock)
+    def test_subscription(self, queue: MagicMock):
+        """
+        Test subscription on unregistered state model
+        """
+        async def callback(demo: DemoState) -> None: ...
+        self.mock_loader()
+        self.state.subscribe(DemoState, callback)
+        queue.return_value.append.assert_called_once_with(callback)
 
     @staticmethod
     def mock_ssm(ssm: Dict) -> MagicMock:
