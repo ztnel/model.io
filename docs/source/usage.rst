@@ -4,7 +4,22 @@ Usage
 System Requirements
 -------------------
 
-Some features of *myosin* are only written for POSIX compliant systems. Cross-platform support for all features is not currently being pursued. *Myosin* is tested against python versions: ``3.7``, ``3.8`` and ``3.9``. *Myosin* will extend support for future python versions.
+*Myosin* is built for use on embedded linux platforms. Some features of *myosin* are only written for POSIX compliant systems. Cross-platform support for all features is not currently being pursued.
+
+Supported Python Versions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+The table below outlines the distributions and test suite support of *myosin* against different python versions: 
+
+====== =========== =============
+Python Distibution Test Suite
+====== =========== =============
+3.8    Supported   Supported
+------ ----------- -------------
+3.9    Supported   Supported
+------ ----------- -------------
+3.10   Supported   Not Supported
+====== =========== =============
+
 
 Installation
 ------------
@@ -128,5 +143,10 @@ Run the tests using the ``nosetests`` utility:
 .. code-block:: console
 
    nosetests
+
+.. warning::
+   The ``nosetests`` utility is no longer maintained and has compatibility issues with Python 3.10 as noted by this `issue thread <https://github.com/nose-devs/nose/issues/1099>`_. Therefore *myosin* unittests will not be executable on Python 3.10.
+
+   I am looking to migrate to pytest and would love contributor support in unittesting.
 
 The test runner will report the executed tests and generate a coverage report. The coverage goal for this library is 95% or greater. If you want to contribute and don't know how, this is a great place to start.
