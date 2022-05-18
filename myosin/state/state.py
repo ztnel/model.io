@@ -39,18 +39,19 @@ class State:
 
     def load(self, model: _T) -> _T:
         """
-        Load state model into memory
+        Load state model into state registry
 
         :param model: state model
         :type model: StateModel
         """
         model.load()
         try:
-            model.serialize()
+            serialized_model = model.serialize()
         except AttributeError as exc:
             raise UninitializedStateError from exc
-        self._ssm[model.__typehash__()] = SSM[_T](model)
-        self._logger.info("Loaded state model: %s", pformat(model.serialize()))
+        else:
+            self._ssm[model.__typehash__()] = SSM[_T](model)
+            self._logger.info("Loaded state model: %s", pformat(serialized_model))
         return model
 
     def checkout(self, state_type: Type[_T]) -> _T:
