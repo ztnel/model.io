@@ -55,7 +55,6 @@ setup(
         'Operating System :: Unix',
         'Topic :: Software Development :: Object Brokering',
         'Topic :: Software Development :: Embedded Systems',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8'
         'Programming Language :: Python :: 3.9'
         'Programming Language :: Python :: 3.10'
