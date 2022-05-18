@@ -8,7 +8,7 @@ System Requirements
 
 Supported Python Versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-The table below outlines the distributions and test suite support of *myosin* against different python versions: 
+The following table outlines the distributions and testing support for *myosin* against different python versions: 
 
 ====== =========== =============
 Python Distibution Test Suite
