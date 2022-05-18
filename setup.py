@@ -9,7 +9,7 @@ NAME = 'myosin'
 DESCRIPTION = 'Lightweight state management engine for posix compliant systems'
 EMAIL = 'christian@leapsystems.online'
 AUTHOR = 'Christian Sargusingh'
-REQUIRES_PYTHON = '>=3.7.0'
+REQUIRES_PYTHON = '>=3.8.0'
 VERSION = False
 
 here = os.path.abspath(os.path.dirname(__file__))
