@@ -56,13 +56,14 @@ setup(
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'Development Status :: 4 - Beta',
         'Operating System :: Unix',
+        'Development Status :: 4 - Beta',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'License :: OSI Approved :: MIT License',
         'Topic :: Software Development :: Object Brokering',
         'Topic :: Software Development :: Embedded Systems',
-        'Programming Language :: Python :: 3.8'
-        'Programming Language :: Python :: 3.9'
-        'Programming Language :: Python :: 3.10'
-        'License :: OSI Approved :: MIT License',
+
     ],
 )
