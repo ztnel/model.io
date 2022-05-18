@@ -52,6 +52,7 @@ class StateModel(BaseModel):
                 device_payload: Dict[str, Any] = json.load(json_file)
         except JSONDecodeError as exc:
             self._logger.error("Model cache document corrupt:\n%s", exc)
+            self.clear()
         except FileNotFoundError:
             self._logger.warning("Model not found in caching directory")
         else:
