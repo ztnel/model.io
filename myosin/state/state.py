@@ -88,7 +88,8 @@ class State:
         """
         # do not trust any external pass-by-reference objects!
         state = copy.deepcopy(state)
-        self._logger.info("Committing state model of type %s with cache mode: %s", type(state), "enabled" if cache else "disabled")
+        self._logger.info("Committing state model of type %s with cache mode: %s",
+            type(state), "enabled" if cache else "disabled")
         # automatic type inference by typehash
         _type_hash = state.__typehash__() 
         self._logger.debug("Computed type hash: %s", _type_hash)
