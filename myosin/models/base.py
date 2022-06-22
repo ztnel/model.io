@@ -58,7 +58,9 @@ class BaseModel(ABC):
         self.__id = _id
 
     @abstractmethod
-    def serialize(self) -> Dict[str, Any]: ...
+    def serialize(self) -> Dict[str, Any]:
+        raise NotImplementedError
 
     @abstractmethod
-    def deserialize(self, **kwargs) -> None: ...
+    def deserialize(self, **kwargs) -> None:
+        raise NotImplementedError
