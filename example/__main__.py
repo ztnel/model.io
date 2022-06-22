@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import logging
 
@@ -10,9 +11,9 @@ from example.models.system import System
 from example.sensors.uart import UARTInterface
 
 
-os.environ['MYOSIN_CACHE_BASE_PATH'] = "example/cache"
+os.environ['MYOSIN_CACHE_BASE_PATH'] = "example/tmp"
 logging.basicConfig(level=logging.DEBUG)
-# _log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 t = Telemetry()
@@ -24,8 +25,16 @@ with State() as state:
 
 mqtt = MQTTHandler()
 sensors = UARTInterface()
-Thread(target=mqtt.report_loop, args=(), daemon=True).start()
-Thread(target=sensors.report_loop, args=(), daemon=True).start()
+mqtt_runner = Thread(target=mqtt.report_loop, args=(), daemon=True)
+uart_runner = Thread(target=sensors.report_loop, args=(), daemon=True)
+uart_runner.start()
+mqtt_runner.start()
 
 while True:
-    time.sleep(10)
+    if not mqtt_runner.is_alive():
+        _log.critical("MQTT runner exited")
+        sys.exit(1)
+    if not uart_runner.is_alive():
+        _log.critical("UART runner exited")
+        sys.exit(1)
+    time.sleep(1)

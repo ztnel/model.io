@@ -13,9 +13,13 @@ class UARTInterface:
 
     def report_loop(self) -> NoReturn:
         while True:
-            time.sleep(1)
+            time.sleep(0.01)
+            reading = random.uniform(10.5, 75.5)
             with State() as state:
                 telemetry = state.checkout(Telemetry)
-                telemetry.tp = random.uniform(10.5, 75.5)
-                state.commit(telemetry)
-            print(f"Telemetry report: {telemetry}")
+                telemetry.tp = reading
+                state.commit(telemetry, cache=True)
+            with State() as state:
+                telemetry = state.checkout(Telemetry)
+            assert(telemetry.tp ==reading)
+            self._logger.info("Telemetry report: %s", telemetry)

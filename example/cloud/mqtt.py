@@ -15,11 +15,11 @@ class MQTTHandler:
 
     def report_loop(self) -> NoReturn:
         while True:
-            time.sleep(2)
+            time.sleep(0.01)
             with State() as state:
                 telemetry = state.checkout(Telemetry)
             try:
-                print(f"Telemetry report: {telemetry}")
+                self._logger.info(f"Telemetry report: {telemetry}")
                 rc = random.randint(0, 1)
                 if rc:
                     raise ConnectionError
