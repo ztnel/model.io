@@ -6,13 +6,13 @@ Modified: 2022-04
 
 """
 
+import copy
 import asyncio
 from typing import Dict
 import unittest
 import logging
 from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
 from myosin.models.state import StateModel
-from tests.resources.models import DemoState
 
 from myosin import State
 from myosin.state.ssm import SSM
@@ -23,7 +23,11 @@ class TestState(unittest.TestCase):
 
     def setUp(self) -> None:
         logging.disable()
-        self.test_state = DemoState(1)
+        self.test_state = MagicMock(spec=StateModel)
+        self.test_state.__typehash__ = MagicMock()
+        self.test_state.__typehash__.return_value = hash(MagicMock)
+        self.test_ssm = MagicMock(spec=SSM)
+        self.test_ssm.ref = self.test_state
         self.state = State()
 
     def tearDown(self) -> None:
@@ -31,21 +35,15 @@ class TestState(unittest.TestCase):
         self.state._ssm.clear()
         del self.state
 
-    def mock_loader(self):
-        """
-        State loading helper to remove interdependancy of testing methods
-        """
-        self.state._ssm[self.test_state.__typehash__()] = SSM[DemoState](self.test_state)
-
-    @patch.object(StateModel, 'load')
-    @patch.object(StateModel, 'serialize', side_effect=AttributeError)
-    def test_uninitialized_load(self, _: MagicMock, load: MagicMock):
+    @patch("myosin.state.state.pformat", lambda x: None)
+    def test_uninitialized_load(self):
         """
         Test loading an uninitalized model
         """
+        self.test_state.serialize.side_effect = AttributeError
         with self.assertRaises(UninitializedStateError):
             self.state.load(self.test_state)
-        load.assert_called_once()
+        self.test_state.load.assert_called_once()
 
     def test_cm_lock(self):
         """
@@ -56,107 +54,111 @@ class TestState(unittest.TestCase):
             self.assertTrue(state.state_lock.locked())
         self.assertFalse(state.state_lock.locked())
 
-    @patch.object(StateModel, 'load')
-    @patch.object(DemoState, 'serialize', **{'return_value': "test"})
-    def test_load(self, serialize: MagicMock, load: MagicMock):
+    @patch.object(SSM, "__init__", lambda x, y: None)
+    @patch("myosin.state.state.pformat", lambda x: None)
+    def test_load(self):
         """
         Test state load keyset and SSM wrapper configuration
         """
         # initialize model
         self.test_state.name = "test"
-        self.state.load(self.test_state)
-        load.assert_called_once()
-        serialize.assert_called_once()
+        res_state = self.state.load(self.test_state)
+        self.test_state.load.assert_called_once()
+        self.test_state.serialize.assert_called_once()
         # im setting the test like this in order to test both the keyset and the object set,
         # I want to raise test assertion failures rather than key errors.
         ssm = self.state._ssm.get(self.test_state.__typehash__())
         self.assertIsNotNone(ssm)
-        if ssm is not None:
-            self.assertEqual(ssm.ref, self.test_state)
+        self.assertEqual(res_state, self.test_state)
 
     def test_null_checkout(self):
         """
         Test null checkout fails with NullCheckoutError
         """
         with self.assertRaises(NullCheckoutError):
-            _ = self.state.checkout(DemoState)
+            _ = self.state.checkout(MagicMock)
 
-    def test_checkout(self):
+    @patch.object(copy, "deepcopy")
+    def test_checkout(self, mock_deepcopy: MagicMock):
         """
         Test checkout copy
         """
-        self.mock_loader()
-        test_state = self.state.checkout(DemoState)
-        self.assertNotEqual(hash(test_state), hash(self.test_state))
+        dcm = MagicMock()
+        mock_deepcopy.return_value = dcm 
+        self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
+        dc_state = self.state.checkout(MagicMock)
+        self.assertEqual(dc_state, dcm)
 
-    def test_unregistered_commit(self):
+    @patch.object(copy, "deepcopy")
+    def test_unregistered_commit(self, mock_deepcopy: MagicMock):
         """
         Test unregistered state commit
         """
+        mock_deepcopy.return_value = self.test_state
         with self.assertRaises(HashNotFound):
             self.state.commit(self.test_state)
+        
 
-    @patch.object(SSM, 'execute', new_callable=AsyncMock)
-    @patch.object(StateModel, 'cache')
-    def test_cached_commit(self, cache: MagicMock, execute: AsyncMock):
+    @patch.object(copy, "deepcopy")
+    def test_cached_commit(self, mock_deepcopy: MagicMock):
         """
         Test state commit with caching
         """
-        self.mock_loader()
+        mock_deepcopy.return_value = self.test_state 
+        self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
         self.state.commit(self.test_state, cache=True)
-        execute.assert_awaited_once()
-        cache.assert_called_once()
-
-    @patch.object(SSM, 'execute', new_callable=AsyncMock)
-    @patch.object(StateModel, 'cache')
-    def test_uncached_commit(self, cache: MagicMock, execute: AsyncMock):
+        self.test_state.cache.assert_called_once()
+    
+    @patch.object(copy, "deepcopy")
+    def test_commit(self, mock_deepcopy: MagicMock):
         """
-        Test state commit without caching
+        Test state commit object assignment logic
         """
-        self.mock_loader()
-        self.state.commit(self.test_state)
-        execute.assert_awaited_once()
-        cache.assert_not_called()
+        mock_deepcopy.return_value = self.test_state 
+        self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
+        print(self.test_state.__typehash__() not in self.state._ssm)
+        res_state = self.state.commit(self.test_state)
+        self.assertEqual(res_state, self.test_state)
 
+    @patch.object(copy, "deepcopy")
     @patch.object(asyncio, 'run')
-    def test_commit_hash_not_found(self, run: MagicMock):
+    def test_commit_with_async_queue(self, mock_run: MagicMock, mock_deepcopy: MagicMock):
         """
-        Test commit on unregistered state model
+        Test state commit with async callback queue
         """
-        mock_ssm = self.mock_ssm(self.state._ssm)
-        mock_ssm.get.return_value = None
-        with self.assertRaises(HashNotFound):
-            self.state.commit(self.test_state)
-        run.assert_not_called()
+        mock_deepcopy.return_value = self.test_state 
+        self.test_ssm.queue = [ 1 ]
+        self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
+        self.state.commit(self.test_state)
+        self.test_ssm.execute.assert_called_once()
+        mock_run.assert_called_once()
 
-    @patch.object(StateModel, 'clear')
-    def test_clear(self, clear: MagicMock):
+    def test_clear(self):
         """
         Test state model clear
         """
-        self.mock_loader()
+        self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
         self.state.reset()
-        clear.assert_called_once()
+        self.test_ssm.ref.clear.assert_called_once()
 
     def test_subscription_hash_not_found(self):
         """
         Test subscription on unregistered state model
         """
-        async def callback(demo: DemoState) -> None: ...
+        async def callback(demo: MagicMock) -> None: ...
         mock_ssm = self.mock_ssm(self.state._ssm)
         mock_ssm.get.return_value = None
         with self.assertRaises(HashNotFound):
-            self.state.subscribe(DemoState, callback)
+            self.state.subscribe(MagicMock, callback)
 
-    @patch.object(SSM, 'queue', new_callable=PropertyMock)
-    def test_subscription(self, queue: MagicMock):
+    def test_subscription(self):
         """
-        Test subscription on unregistered state model
+        Test subscription (sanity)
         """
-        async def callback(demo: DemoState) -> None: ...
-        self.mock_loader()
-        self.state.subscribe(DemoState, callback)
-        queue.return_value.append.assert_called_once_with(callback)
+        async def callback(_: MagicMock) -> None: ...
+        self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
+        self.state.subscribe(MagicMock, callback)
+        self.test_ssm.queue.append.assert_called_once_with(callback)
 
     @staticmethod
     def mock_ssm(ssm: Dict) -> MagicMock:

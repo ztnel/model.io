@@ -10,7 +10,7 @@ import logging
 from unittest.mock import patch, MagicMock
 
 from myosin.models.base import BaseModel
-
+from myosin.utils.funcs import pformat
 
 class TestBaseModel(unittest.TestCase):
 
@@ -43,11 +43,16 @@ class TestBaseModel(unittest.TestCase):
         """
         self.assertEqual(self.base.__typehash__(), self.comparator.__typehash__())
 
-    def test_repr(self):
+    @patch.object(BaseModel, "serialize")
+    @patch("myosin.models.base.pformat")
+    def test_repr(self, mock_pformat: MagicMock, mock_serialize: MagicMock):
         """
         Test base model repr
         """
-        self.assertEqual(type(self.base.__repr__()), str)
+        mock_serial = MagicMock()
+        mock_serialize.return_value =mock_serial 
+        self.base.__repr__()
+        mock_pformat.assert_called_once_with(mock_serial)
 
     def test_eq(self):
         """

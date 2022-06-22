@@ -5,8 +5,8 @@ Myosin State Engine
 Modified: 2022-04
 
 """
-import asyncio
 import copy
+import asyncio
 import logging
 from threading import Lock
 from typing import Dict, Type, TypeVar, Callable
@@ -32,10 +32,12 @@ class State:
 
     def __enter__(self):
         self.state_lock.acquire()
+        self._logger.debug("Acquired state lock. Lock state: %s", self.state_lock.locked())
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.state_lock.release()
+        self._logger.debug("Released state lock. Lock state: %s", self.state_lock.locked())
 
     def load(self, model: _T) -> _T:
         """
@@ -84,15 +86,22 @@ class State:
         :return: updated system state reference
         :rtype: _T
         """
+        # do not trust any external pass-by-reference objects!
+        state = copy.deepcopy(state)
+        self._logger.info("Committing state model of type %s with cache mode: %s",
+            type(state), "enabled" if cache else "disabled")
         # automatic type inference by typehash
-        _type_hash = hash(type(state))
-        # verify typehash
-        ssm = self._ssm.get(_type_hash)
-        if not ssm:
+        _type_hash = state.__typehash__() 
+        self._logger.debug("Computed type hash: %s", _type_hash)
+        # verify typehash exists in ssm registry
+        if _type_hash not in self._ssm:
             self._logger.error("Committed typehash: %s did not match any state model", _type_hash)
             raise HashNotFound
+        ssm = self._ssm[_type_hash]
         ssm.ref = state
-        asyncio.run(ssm.execute())
+        if len(ssm.queue) > 0:
+            self._logger.debug("Executing asynchronous callback queue")
+            asyncio.run(ssm.execute())
         if cache:
             state.cache()
             self._logger.debug("Cached commited state model %s", state)
