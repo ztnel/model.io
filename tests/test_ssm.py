@@ -24,11 +24,16 @@ class TestSSM(unittest.TestCase):
         del self.ssm
         logging.disable(logging.NOTSET)
 
+    def test_ref_autoset(self):
+        """
+        Test reference is autoset in ssm init
+        """
+        self.assertEqual(self.ssm.ref, self.test_state)
+
     def test_reference_hash(self):
         """
         Test for correct reference hash return
         """
-        print(hash(self.ssm.ref))
         self.assertEqual(self.ssm.refhash, hash(self.test_state))
 
     def test_type_hash(self):
