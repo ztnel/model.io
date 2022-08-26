@@ -8,7 +8,7 @@ Modified: 2022-04
 import copy
 import asyncio
 import logging
-from typing import Dict, List, Type, TypeVar, Callable
+from typing import Dict, Set, Type, TypeVar, Callable
 
 from myosin.state.ssm import SSM
 from myosin.typing import AsyncCallback
@@ -39,7 +39,8 @@ class State:
 
     def __init__(self, *args: Type[_T]) -> None:
         self._logger = logging.getLogger(__name__)
-        self.accessors: List[SSM] = [self._ssm[hash(arg)] for arg in args]
+        # use set to ensure locking accessors are mutually exclusive
+        self.accessors: Set[SSM] = {self._ssm[hash(arg)] for arg in args}
 
     def __enter__(self):
         for accessor in self.accessors:
