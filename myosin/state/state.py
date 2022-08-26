@@ -8,8 +8,7 @@ Modified: 2022-04
 import copy
 import asyncio
 import logging
-from threading import Lock
-from typing import Dict, Type, TypeVar, Callable
+from typing import Dict, List, Type, TypeVar, Callable
 
 from myosin.state.ssm import SSM
 from myosin.typing import AsyncCallback
@@ -22,22 +21,36 @@ _T = TypeVar('_T', bound=StateModel)
 
 
 class State:
+    """
+    State access context manager. Request mutex locks on one or multiple state models by passing
+    the model class in the initializer.
 
-    # storage mechanism is { name: Model }
+    Example
+    ~~~~~~~
+    ```
+    with State(Model) as state:
+        model = state.checkout(Model)
+        ...
+    ```
+    """
+
+    # shared state memory
     _ssm: Dict[int, SSM] = {}
-    state_lock = Lock()
 
-    def __init__(self) -> None:
+    def __init__(self, *args: Type[_T]) -> None:
         self._logger = logging.getLogger(__name__)
+        self.accessors: List[SSM] = [self._ssm[hash(arg)] for arg in args]
 
     def __enter__(self):
-        self.state_lock.acquire()
-        self._logger.debug("Acquired state lock. Lock state: %s", self.state_lock.locked())
+        for accessor in self.accessors:
+            accessor.lock.acquire()
+            self._logger.info("Acquired %s state lock", accessor)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.state_lock.release()
-        self._logger.debug("Released state lock. Lock state: %s", self.state_lock.locked())
+        for accessor in self.accessors:
+            accessor.lock.release()
+            self._logger.info("Released %s state lock", accessor)
 
     def load(self, model: _T) -> _T:
         """
@@ -89,9 +102,9 @@ class State:
         # do not trust any external pass-by-reference objects!
         state = copy.deepcopy(state)
         self._logger.info("Committing state model of type %s with cache mode: %s",
-            type(state), "enabled" if cache else "disabled")
+                          type(state), "enabled" if cache else "disabled")
         # automatic type inference by typehash
-        _type_hash = state.__typehash__() 
+        _type_hash = state.__typehash__()
         self._logger.debug("Computed type hash: %s", _type_hash)
         # verify typehash exists in ssm registry
         if _type_hash not in self._ssm:
