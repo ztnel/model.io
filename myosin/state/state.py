@@ -26,12 +26,12 @@ class State:
     the model class in the initializer. Avoid nested context manager entry.
 
     Example
-    ~~~~~~~
-    ```
-    with State(Model) as state:
-        model = state.checkout(Model)
-        ...
-    ```
+    -------
+    .. code-block:: python
+
+        with State(Model) as state:
+            model = state.checkout(Model)
+            ...
     """
 
     # shared state memory
