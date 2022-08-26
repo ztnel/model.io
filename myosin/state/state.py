@@ -25,8 +25,6 @@ class State:
     State access context manager. Request mutex locks on one or multiple state models by passing
     the model class in the initializer. Avoid nested context manager entry.
 
-    Example
-    -------
     .. code-block:: python
 
         with State(Model) as state:
