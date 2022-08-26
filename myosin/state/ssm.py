@@ -3,6 +3,7 @@
 import logging
 import asyncio
 import traceback
+from threading import Lock
 from typing import Generic, List, Tuple, TypeVar, Callable
 
 from myosin.models.state import StateModel
@@ -17,7 +18,19 @@ class SSM(Generic[_S]):
     def __init__(self, reference: _S) -> None:
         self._logger = logging.getLogger(__name__)
         self.ref = reference
+        self.lock = Lock()
         self.queue = []
+
+    def __str__(self) -> str:
+        return f"{self.ref.__class__.__qualname__}"
+
+    @property
+    def lock(self) -> Lock:
+        return self.__lock
+
+    @lock.setter
+    def lock(self, lock: Lock) -> None:
+        self.__lock = lock
 
     @property
     def refhash(self) -> int:
