@@ -20,6 +20,9 @@ BP_ENV_VAR = "MYOSIN_CACHE_BASE_PATH"
 
 
 class StateModel(BaseModel):
+    """
+    System state model for categorical and homogenous data access.
+    """
 
     def __init__(self, _id: Optional[_PKey] = None) -> None:
         super().__init__(_id)
