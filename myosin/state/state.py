@@ -23,7 +23,7 @@ _T = TypeVar('_T', bound=StateModel)
 class State:
     """
     State access context manager. Request mutex locks on one or multiple state models by passing
-    the model class in the initializer.
+    the model class in the initializer. Avoid nested context manager entry.
 
     Example
     ~~~~~~~
@@ -40,7 +40,7 @@ class State:
     def __init__(self, *args: Type[_T]) -> None:
         self._logger = logging.getLogger(__name__)
         # use set to ensure locking accessors are mutually exclusive
-        self.accessors: Set[SSM] = {self._ssm[hash(arg)] for arg in args}
+        self.accessors = {self._ssm[hash(arg)] for arg in args}
 
     def __enter__(self):
         for accessor in self.accessors:
@@ -52,6 +52,14 @@ class State:
         for accessor in self.accessors:
             accessor.lock.release()
             self._logger.info("Released %s state lock", accessor)
+
+    @property
+    def accessors(self) -> Set[SSM]:
+        return self.__accessors
+
+    @accessors.setter
+    def accessors(self, accessors: Set[SSM]) -> None:
+        self.__accessors = accessors
 
     def load(self, model: _T) -> _T:
         """
