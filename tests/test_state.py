@@ -8,12 +8,12 @@ Modified: 2022-04
 
 import copy
 import asyncio
+import logging
 from typing import Dict
 import unittest
-import logging
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
-from myosin.models.state import StateModel
+from unittest.mock import MagicMock, PropertyMock, patch
 
+from myosin.models.state import StateModel
 from myosin import State
 from myosin.state.ssm import SSM
 from myosin.exceptions.state import HashNotFound, NullCheckoutError, UninitializedStateError
@@ -45,14 +45,25 @@ class TestState(unittest.TestCase):
             self.state.load(self.test_state)
         self.test_state.load.assert_called_once()
 
-    def test_cm_lock(self):
+    @patch.object(State, "accessors", new_callable=PropertyMock)
+    def test_cm_lock(self, mock_accessors: MagicMock):
         """
-        Test context manager state lock aquisition and release
+        Test context manager lock aquisition and release
         """
-        # NOTE: threading.Lock methods cannot be mocked
+        def mock_iter(_):
+            for x in [a1, a2]:
+                yield x
+        mock_accessors.__iter__ = mock_iter
+        mock_state = State()
+        a1, a2 = MagicMock(spec=SSM), MagicMock(spec=SSM)
+        mock_state._logger = MagicMock()
+        mock_state.accessors.__iter__ = mock_iter  # type:ignore
+        # build mock accessors array and validate acquire and release are called iteratively
         with State() as state:
-            self.assertTrue(state.state_lock.locked())
-        self.assertFalse(state.state_lock.locked())
+            a1.lock.acquire.assert_called_once()
+            a2.lock.acquire.assert_called_once()
+        a1.lock.release.assert_called_once()
+        a2.lock.release.assert_called_once()
 
     @patch.object(SSM, "__init__", lambda x, y: None)
     @patch("myosin.state.state.pformat", lambda x: None)
@@ -84,7 +95,7 @@ class TestState(unittest.TestCase):
         Test checkout copy
         """
         dcm = MagicMock()
-        mock_deepcopy.return_value = dcm 
+        mock_deepcopy.return_value = dcm
         self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
         dc_state = self.state.checkout(MagicMock)
         self.assertEqual(dc_state, dcm)
@@ -97,37 +108,36 @@ class TestState(unittest.TestCase):
         mock_deepcopy.return_value = self.test_state
         with self.assertRaises(HashNotFound):
             self.state.commit(self.test_state)
-        
 
     @patch.object(copy, "deepcopy")
     def test_cached_commit(self, mock_deepcopy: MagicMock):
         """
         Test state commit with caching
         """
-        mock_deepcopy.return_value = self.test_state 
+        mock_deepcopy.return_value = self.test_state
         self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
         self.state.commit(self.test_state, cache=True)
         self.test_state.cache.assert_called_once()
-    
+
     @patch.object(copy, "deepcopy")
     def test_commit(self, mock_deepcopy: MagicMock):
         """
         Test state commit object assignment logic
         """
-        mock_deepcopy.return_value = self.test_state 
+        mock_deepcopy.return_value = self.test_state
         self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
-        print(self.test_state.__typehash__() not in self.state._ssm)
         res_state = self.state.commit(self.test_state)
         self.assertEqual(res_state, self.test_state)
 
+    @unittest.skip("Refactoring async implementation")
     @patch.object(copy, "deepcopy")
     @patch.object(asyncio, 'run')
     def test_commit_with_async_queue(self, mock_run: MagicMock, mock_deepcopy: MagicMock):
         """
         Test state commit with async callback queue
         """
-        mock_deepcopy.return_value = self.test_state 
-        self.test_ssm.queue = [ 1 ]
+        mock_deepcopy.return_value = self.test_state
+        self.test_ssm.queue = [1]
         self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
         self.state.commit(self.test_state)
         self.test_ssm.execute.assert_called_once()

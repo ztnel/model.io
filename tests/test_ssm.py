@@ -7,10 +7,33 @@ Modified: 2022-04
 
 import unittest
 import logging
-import asyncio
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 from myosin.state.ssm import SSM
 from tests.resources.models import DemoState
+
+
+class TestAsync(unittest.IsolatedAsyncioTestCase):
+
+    def setUp(self) -> None:
+        logging.disable()
+        self.test_state = DemoState(1)
+        self.ssm = SSM[DemoState](self.test_state)
+
+    def tearDown(self) -> None:
+        del self.ssm
+        logging.disable(logging.NOTSET)
+
+    async def test_execute(self):
+        """
+        Test execution runner and exception reporting
+        """
+        alpha_cb = AsyncMock()
+        alpha_cb.side_effect = BaseException
+        beta_cb = AsyncMock()
+        self.ssm.queue = [alpha_cb, beta_cb]
+        await self.ssm.execute()
+        alpha_cb.assert_called_once()
+        beta_cb.assert_called_once()
 
 
 class TestSSM(unittest.TestCase):
@@ -58,15 +81,3 @@ class TestSSM(unittest.TestCase):
         new_queue = [async_callback]
         self.ssm.queue = new_queue
         self.assertEqual(self.ssm.queue, new_queue)
-
-    def test_execute(self):
-        """
-        Test execution runner and exception reporting
-        """
-        alpha_cb = AsyncMock()
-        alpha_cb.side_effect = BaseException
-        beta_cb = AsyncMock()
-        self.ssm.queue = [alpha_cb, beta_cb]
-        asyncio.run(self.ssm.execute())
-        alpha_cb.assert_called_once()
-        beta_cb.assert_called_once()
