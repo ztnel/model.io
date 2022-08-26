@@ -15,11 +15,8 @@ class UARTInterface:
         while True:
             time.sleep(0.01)
             reading = random.uniform(10.5, 75.5)
-            with State() as state:
+            with State(Telemetry) as state:
                 telemetry = state.checkout(Telemetry)
                 telemetry.tp = reading
                 state.commit(telemetry, cache=True)
-            with State() as state:
-                telemetry = state.checkout(Telemetry)
-            assert(telemetry.tp ==reading)
             self._logger.info("Telemetry report: %s", telemetry)

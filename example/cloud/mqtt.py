@@ -16,7 +16,7 @@ class MQTTHandler:
     def report_loop(self) -> NoReturn:
         while True:
             time.sleep(0.01)
-            with State() as state:
+            with State(Telemetry) as state:
                 telemetry = state.checkout(Telemetry)
             try:
                 self._logger.info(f"Telemetry report: {telemetry}")
@@ -25,12 +25,12 @@ class MQTTHandler:
                     raise ConnectionError
             except ConnectionError as exc:
                 self._logger.exception("Failed to write to stream: %s", exc)
-                with State() as state:
+                with State(System) as state:
                     system = state.checkout(System)
                     system.online = False
                     state.commit(system, cache=True)
             else:
-                with State() as state:
+                with State(System) as state:
                     system = state.checkout(System)
                     system.online = True
                     state.commit(system, cache=True)
