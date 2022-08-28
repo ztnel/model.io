@@ -2,9 +2,11 @@
 """
 Myosin State Engine
 ===================
+
 Modified: 2022-04
 
 """
+
 import copy
 import asyncio
 import logging
@@ -53,14 +55,6 @@ class State:
             accessor.lock.release()
             self._logger.info("Released %s state lock", accessor)
         metrics.active_contexts.dec()
-
-    @property
-    def accessors(self) -> Set[SSM]:
-        return self.__accessors
-
-    @accessors.setter
-    def accessors(self, accessors: Set[SSM]) -> None:
-        self.__accessors = accessors
 
     def load(self, model: _T) -> _T:
         """
