@@ -2,8 +2,8 @@
 About
 =====
 
-Why *Myosin*?
--------------
+State-Driven Design
+-------------------
 
 *Myosin* is a lightweight framework for developing state-driven software systems. It provides a flexible and strictly-typed API for creating system state variables and a global thread-safe context manager for read and write access. State variables use an object-oriented data schemas to simplify access to state data and improving system scalability. This is a significant improvement over passing generic data structures to multiple system components because access to Python ``object`` data is customizable and self descriptive using ``properties``.
 
@@ -26,8 +26,8 @@ Thread Safety
 ~~~~~~~~~~~~~
 All system state accessors are fully thread-safe with mutexes for each model reducing latency for concurrent read and write operations. Access to state models are done using deep copies (pass by value) to decouple the local models from state managed models.
 
-State-Driven Event Queue
-~~~~~~~~~~~~~~~~~~~~~~~~
+Asynchrounous Event Queue
+~~~~~~~~~~~~~~~~~~~~~~~~~
 Support for state subscriber callback execution in response to a change to system state model.
 
 Strictly Typed API
@@ -41,6 +41,6 @@ All public methods for access and modification to system state variables are str
     :align: center
 
 Prometheus Monitoring
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 *Myosin* uses the prometheus client python library to export performance metrics to a prometheus instance enabling real-time monitoring of your core application runtime and providing performance insights to aid system optimization and debugging.
 
