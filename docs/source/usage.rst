@@ -154,7 +154,7 @@ Prometheus Metrics
 
 The github repository hosts an example program which demonstrates usage of the framework and provides a Grafana dashboard and some basic queries for visualizing these metrics.
 
-.. image:: ../_static/typing.gif
+.. image:: ../_static/prometheus.gif
     :align: center
 
 Developer Tips
