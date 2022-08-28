@@ -13,6 +13,7 @@ from typing import Dict, Set, Type, TypeVar, Callable
 from myosin.state.ssm import SSM
 from myosin.typing import AsyncCallback
 from myosin.utils.funcs import pformat
+from myosin.utils.metrics import Metrics as metrics
 from myosin.models.state import StateModel
 from myosin.exceptions.state import HashNotFound, NullCheckoutError, UninitializedStateError
 
@@ -41,6 +42,7 @@ class State:
         self.accessors = {self._ssm[hash(arg)] for arg in args}
 
     def __enter__(self):
+        metrics.active_contexts.inc()
         for accessor in self.accessors:
             accessor.lock.acquire()
             self._logger.info("Acquired %s state lock", accessor)
@@ -50,6 +52,7 @@ class State:
         for accessor in self.accessors:
             accessor.lock.release()
             self._logger.info("Released %s state lock", accessor)
+        metrics.active_contexts.dec()
 
     @property
     def accessors(self) -> Set[SSM]:
@@ -86,13 +89,15 @@ class State:
         :return: deep copy of requested state model
         :rtype: _T
         """
-        self._logger.info("Checking out state model of type %s", state_type)
-        _type_hash = hash(state_type)
-        self._logger.debug("Computed type hash: %s", _type_hash)
-        ssm = self._ssm.get(_type_hash)
-        if not ssm:
-            raise NullCheckoutError
-        return copy.deepcopy(ssm.ref)
+        with metrics.checkout_latency.labels(f"{state_type.__qualname__}").time():
+            self._logger.info("Checking out state model of type %s", state_type)
+            _type_hash = hash(state_type)
+            self._logger.debug("Computed type hash: %s", _type_hash)
+            ssm = self._ssm.get(_type_hash)
+            if not ssm:
+                raise NullCheckoutError
+            _copy = copy.deepcopy(ssm.ref)
+        return _copy
 
     def commit(self, state: _T, cache: bool = False) -> _T:
         """
@@ -106,25 +111,27 @@ class State:
         :return: updated system state reference
         :rtype: _T
         """
-        # do not trust any external pass-by-reference objects!
-        state = copy.deepcopy(state)
-        self._logger.info("Committing state model of type %s with cache mode: %s",
-                          type(state), "enabled" if cache else "disabled")
-        # automatic type inference by typehash
-        _type_hash = state.__typehash__()
-        self._logger.debug("Computed type hash: %s", _type_hash)
-        # verify typehash exists in ssm registry
-        if _type_hash not in self._ssm:
-            self._logger.error("Committed typehash: %s did not match any state model", _type_hash)
-            raise HashNotFound
-        ssm = self._ssm[_type_hash]
-        ssm.ref = state
-        if len(ssm.queue) > 0:
-            self._logger.debug("Executing asynchronous callback queue")
-            asyncio.run(ssm.execute())
-        if cache:
-            state.cache()
-            self._logger.debug("Cached commited state model %s", state)
+        with metrics.commit_latency.labels(f"{state.__class__.__qualname__}").time():
+            # do not trust any external pass-by-reference objects!
+            state = copy.deepcopy(state)
+            self._logger.info("Committing state model of type %s with cache mode: %s",
+                              type(state), "enabled" if cache else "disabled")
+            # automatic type inference by typehash
+            _type_hash = state.__typehash__()
+            self._logger.debug("Computed type hash: %s", _type_hash)
+            # verify typehash exists in ssm registry
+            if _type_hash not in self._ssm:
+                self._logger.error(
+                    "Committed typehash: %s did not match any state model", _type_hash)
+                raise HashNotFound
+            ssm = self._ssm[_type_hash]
+            ssm.ref = state
+            if len(ssm.queue) > 0:
+                self._logger.debug("Executing asynchronous callback queue")
+                asyncio.run(ssm.execute())
+            if cache:
+                state.cache()
+                self._logger.debug("Cached commited state model %s", state)
         return state
 
     def subscribe(self, state_type: Type[_T], callback: Callable[[_T], AsyncCallback]) -> None:
