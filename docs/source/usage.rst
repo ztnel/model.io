@@ -134,7 +134,7 @@ Advanced Usage
 
 Prometheus Metrics
 ~~~~~~~~~~~~~~~~~~
-*Myosin* uses the prometheus client python library to export performance metrics to a *Prometheus* instance. *Prometheus* enables real-time monitoring of your application and provides insights into the system performance to aid in optimization and debugging. You can learn more about prometheus at their website `<https://prometheus.io>`_The table below describes the exported metrics:
+*Myosin* uses the prometheus client python library to export performance metrics to a *Prometheus* instance. *Prometheus* enables real-time monitoring of your application and provides insights into the system performance to aid in optimization and debugging. You can learn more about prometheus at their website `<https://prometheus.io>`_. The table below describes the exported metrics:
 
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
 | Name                    | Description                                                                                                                    | Type    |
@@ -154,7 +154,7 @@ Prometheus Metrics
 
 The github repository hosts an example program which demonstrates usage of the framework and provides a Grafana dashboard and some basic queries for visualizing these metrics.
 
-.. image:: ../_static/prometheus.gif
+.. image:: ../_static/prometheus.png
     :align: center
 
 Developer Tips
