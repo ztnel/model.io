@@ -141,6 +141,7 @@ Logging
 Logging state data transactions is critical for debugging. All models implement a pretty print json format which makes it easy to read the state model properties in the logging output. Logging any state model is as easy as passing it to a string formatter:
 
 .. code-block:: python
+
    with State(User) as state:
       # checkout a copy of the user state model
       user = state.checkout(User)
