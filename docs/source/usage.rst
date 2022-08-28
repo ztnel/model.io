@@ -4,7 +4,7 @@ Usage
 System Requirements
 -------------------
 
-*Myosin* is built for use on embedded linux platforms. Some features of *myosin* are only written for POSIX compliant systems. Cross-platform support for all features is not currently being pursued.
+*Myosin* is best applied on embedded linux platforms. Some features of *myosin* are only written for POSIX compliant systems. Cross-platform support for all features is not currently being pursued.
 
 Supported Python Versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,7 +24,7 @@ Python Distibution Test Suite
 Installation
 ------------
 
-The easiest way to install ``Myosin`` is using ``pip``:
+The easiest way to install ``myosin`` is using ``pip``:
 
 .. code-block:: console
 
@@ -167,7 +167,7 @@ Developer Tips
 
 Thread Safety
 ~~~~~~~~~~~~~
-In multi-threaded environments it is best practice to perform system state model checkouts and commits inside the same locked state context. Each model is assigned a mutex for synchronizing access. The state context requests a mutex for the resource passed into the state context on entry ensuring the checkout copy is the most recent. Below is an example of undefined behaviour:
+In multi-threaded environments it is best practice to perform system state model checkouts and commits inside the same locked state context. When a model is registered to the system state it is assigned a mutex for synchronizing access to that models resources. The state context requests a mutex for the resource passed into the state context on entry ensuring the checked out copy is up to date. The following code snippet is an example of undefined behaviour:
 
 .. code-block:: python
 
@@ -181,7 +181,9 @@ In multi-threaded environments it is best practice to perform system state model
       state.commit(user)
 
 .. warning::
-   This code block is an example of undefined behaviour. The ``User`` model is modified outside the state context and may no longer be up to date. Commiting this model to the state may overwrite more recent changes made to the user model.
+   The ``User`` model is modified outside the state context and may no longer be up to date. Commiting this model to the state may overwrite more recent changes made to the user model.
+
+To ensure proper resource synchronization perform model checkouts and commits within the same lock context:
 
 .. code-block:: python
 
@@ -192,7 +194,7 @@ In multi-threaded environments it is best practice to perform system state model
 
 Reducing Latency
 ~~~~~~~~~~~~~~~~
-The primary cause of latency is due to long mutex acquisition times. Time spent inside critical sections of should be kept to a minimum. Avoid long blocking function calls while within a locked state context:
+The primary cause of latency is long mutex acquisition times. Time spent inside critical sections of should be kept to a minimum. Avoid long blocking function calls while within a locked state context:
 
 .. code-block:: python
    
@@ -225,7 +227,7 @@ Logging state data transactions is critical for debugging. All models implement 
       user.name = "cS"
       logger.info("User: %s", user)
 
-This will yield a logging output which will resemble a json document:
+This will yield a state model properties in json format:
 
 .. code-block:: console
 
@@ -233,7 +235,8 @@ This will yield a logging output which will resemble a json document:
    {
       "id": "d6c9e2b4-f07a-4ae4-b36f-30e49739085b",
       "name": "cS",
-      "timestamp": 1661661213.072657
+      "timestamp": 1661661213.072657,
+      ...
    }
 
 Testing
