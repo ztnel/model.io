@@ -1,22 +1,12 @@
 API Reference
 =============
 
-.. autoclass:: myosin.state.state.State
+.. autoclass:: myosin.state.state
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. autoclass:: myosin.state.ssm.SSM
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-.. autoclass:: myosin.models.base.BaseModel
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-.. autoclass:: myosin.models.state.StateModel
+.. autoclass:: myosin.models.state
     :members:
     :undoc-members:
     :show-inheritance:
