@@ -1,6 +1,7 @@
 __pycache__
 .vscode
-*.json
+example/cache/*json
+example/tmp/*json
 build
 dist
 *.egg-info
