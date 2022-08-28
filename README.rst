@@ -19,7 +19,7 @@ Myosin
 
 About
 -----
-*Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous framework for facilitating data transactions between system modules simplifying application developement and improving system scalability.
+*Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying developement and improving system scalability.
 
 Core Features
 ~~~~~~~~~~~~~
