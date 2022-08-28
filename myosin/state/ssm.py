@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""
+Myosin State Subscription Model
+===============================
+
+Modified: 2022-08
+
+Registered system state model wrapper.
+
+"""
 
 import logging
 import asyncio
