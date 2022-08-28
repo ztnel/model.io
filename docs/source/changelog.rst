@@ -7,8 +7,8 @@ Changelog
 New Features
 ------------
 * Start of changelog
-* State model level mutex locks to improve state access latency (#42_)
-* Prometheus monitoring metrics (#44_)
+* State model level mutex locks to improve state access latency (`#42_`)
+* Prometheus monitoring metrics (`#44_`)
 * Updated API, Usage and About documentation pages
 
 .. _#44: https://github.com/ztnel/myosin/pull/44
