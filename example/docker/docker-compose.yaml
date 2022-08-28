@@ -33,6 +33,6 @@ services:
     image: example
     build:
       context: ../../
-      dockerfile: docker/Dockerfile
+      dockerfile: example/docker/Dockerfile
     volumes:
       - ../../:/app
