@@ -41,7 +41,7 @@ Alternatively you can build from source:
 
 Basic Usage
 -----------
-Start by defining a model by creating a class that implements ``StateModel``:
+Start by defining a model by creating a class that implements ``StateModel``. For example, we may want to track the active user in the application runtime. We define a model ``User`` with properties associated to a user:
 
 .. code-block:: python
 
@@ -81,7 +81,10 @@ Start by defining a model by creating a class that implements ``StateModel``:
          for k, v in kwargs.items():
             setattr(self, k, v)
 
-In the application entry load the default state model into the engine:
+Model Registration
+~~~~~~~~~~~~~~~~~~
+
+In the application entry, load the state model into the engine with default property values:
 
 .. code-block:: python
 
@@ -95,12 +98,19 @@ In the application entry load the default state model into the engine:
    with State() as state:
       state.load(usr)
 
+This will register an entry for the ``User`` model into the global system state context. If a model with the same type is found in the system cache, *Myosin* will overwrite the model's default property values with those previously cached.
+
+Model Accessors
+~~~~~~~~~~~~~~~
 
 In a consumer module you can access the global ``User`` model by checking out a copy of the model:
 
+.. note:: 
+   Thread-safe access to the ``User`` model is facilitated by passing the model type as an argument to the ``State`` context to request a mutex specific to the model.
+
 .. code-block:: python
 
-   with State() as state:
+   with State(User) as state:
       # checkout a copy of the user state model
       user = state.checkout(User)
    # read properties from the user state model
@@ -111,7 +121,7 @@ In a producer module you can commit to the global ``User`` model by first checki
 
 .. code-block:: python
 
-   with State() as state:
+   with State(User) as state:
       # checkout a copy of the user state model
       user = state.checkout(User)
       # modify user state model copy
@@ -125,7 +135,29 @@ Coming soon.
 
 Developer Tips
 --------------
-Coming soon.
+
+Logging
+~~~~~~~
+Logging state data transactions is critical for debugging. All models implement a pretty print json format which makes it easy to read the state model properties in the logging output. Logging any state model is as easy as passing it to a string formatter:
+
+.. code-block:: python
+   with State(User) as state:
+      # checkout a copy of the user state model
+      user = state.checkout(User)
+      # modify user state model copy
+      user.name = "cS"
+      logger.info("User: %s", user)
+
+This will yield a logging output which will resemble a json document:
+
+.. code-block:: console
+
+User:
+{
+  "id": "d6c9e2b4-f07a-4ae4-b36f-30e49739085b",
+  "name": "cS",
+  "timestamp": 1661661213.072657
+}
 
 Testing
 -------
