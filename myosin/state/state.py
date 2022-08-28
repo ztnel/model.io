@@ -10,7 +10,7 @@ Modified: 2022-04
 import copy
 import asyncio
 import logging
-from typing import Dict, Set, Type, TypeVar, Callable
+from typing import Dict, Type, TypeVar, Callable
 
 from myosin.state.ssm import SSM
 from myosin.typing import AsyncCallback

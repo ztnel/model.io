@@ -11,7 +11,7 @@ import asyncio
 import logging
 from typing import Dict
 import unittest
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, patch
 
 from myosin.models.state import StateModel
 from myosin import State
