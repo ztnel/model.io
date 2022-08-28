@@ -6,6 +6,7 @@ import traceback
 from threading import Lock
 from typing import Generic, List, Tuple, TypeVar, Callable
 
+from myosin.utils.metrics import Metrics as metrics
 from myosin.models.state import StateModel
 from myosin.typing import AsyncCallback
 
@@ -71,6 +72,8 @@ class SSM(Generic[_S]):
         exceptions: List[Tuple[str, Exception]] = list(
             filter(lambda x: type(x[1]) is BaseException, operations))
         for func, exc in exceptions:
+            # track aggregate exceptions
+            metrics.exc_count.labels(str(self)).inc()
             self._logger.exception("Subscriber function: %s encountered an exception: %s", func,
                                    "".join(traceback.format_exception(
                                        etype=type(exc), value=exc, tb=exc.__traceback__
