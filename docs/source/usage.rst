@@ -24,7 +24,7 @@ Python Distibution Test Suite
 Installation
 ------------
 
-The easiest way to install ``myosin`` is using ``pip``:
+The easiest way to install ``Myosin`` is using ``pip``:
 
 .. code-block:: console
 
@@ -131,10 +131,81 @@ In a producer module you can commit to the global ``User`` model by first checki
 
 Advanced Usage
 --------------
-Coming soon.
+
+Prometheus Metrics
+~~~~~~~~~~~~~~~~~~
+*Myosin* uses the prometheus client python library to export performance metrics to a *Prometheus* instance. *Prometheus* enables real-time monitoring of your application and provides insights into the system performance to aid in optimization and debugging. You can learn more about prometheus at their website `<https://prometheus.io>`_The table below describes the exported metrics:
+
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| Name                    | Description                                                                                                                    | Type    |
++=========================+================================================================================================================================+=========+
+| myosin_meta             | Installation metadata of the current myosin distribution                                                                       | Info    |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| myosin_active_contexts  | Number of active threads inside state context manager                                                                          | Gauge   |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| myosin_cb_exc_count     | Running counter of subscription callback exceptions                                                                            | Counter |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| myosin_commit_latency   | Latency of state commit invocations. Divides total number of commit requests by the total time spent performing commits.       | Summary |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| myosin_cache_latency    | Latency of state caching invocations. Divides total number of cache requests by the total time spent performing caches.        | Summary |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| myosin_checkout_latency | Latency of state checkout invocations. Divides total number of checkout requests by the total time spent performing checkouts. | Summary |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+
+The github repository hosts an example program which demonstrates usage of the framework and provides a Grafana dashboard and some basic queries for visualizing these metrics.
+
+.. image:: ../_static/typing.gif
+    :align: center
 
 Developer Tips
 --------------
+
+Thread Safety
+~~~~~~~~~~~~~
+In multi-threaded environments it is best practice to perform system state model checkouts and commits inside the same locked state context. Each model is assigned a mutex for synchronizing access. The state context requests a mutex for the resource passed into the state context on entry ensuring the checkout copy is the most recent. Below is an example of undefined behaviour:
+
+.. code-block:: python
+
+   # `User` lock requested on entry
+   with State(User) as state:
+      user = state.checkout(User)
+   # `User` lock released; model may no longer be up to date
+   user.email = "mike@gmail.com"
+   with State(User) as state:
+      # overwrite user model with local copy
+      state.commit(user)
+
+.. warning::
+   This code block is an example of undefined behaviour. The ``User`` model is modified outside the state context and may no longer be up to date. Commiting this model to the state may overwrite more recent changes made to the user model.
+
+.. code-block:: python
+
+   with State(User) as state:
+      user = state.checkout(User)
+      user.email = "mike@gmail.com"
+      state.commit(user)
+
+Reducing Latency
+~~~~~~~~~~~~~~~~
+The primary cause of latency is due to long mutex acquisition times. Time spent inside critical sections of should be kept to a minimum. Avoid long blocking function calls while within a locked state context:
+
+.. code-block:: python
+   
+   with State(User) as state:
+      user = state.checkout(User)
+      # `User` mutex continually held during long blocking call
+      user.email = long_blocking_transaction()
+      state.commit(user)
+
+Long blocking function calls should be buffered outside the state context:
+
+.. code-block:: python
+
+   email = long_blocking_transaction()
+   with State(User) as state:
+      user = state.checkout(User)
+      user.email = 
+      state.commit(user)
 
 Logging
 ~~~~~~~
