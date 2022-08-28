@@ -136,26 +136,31 @@ Prometheus Metrics
 ~~~~~~~~~~~~~~~~~~
 *Myosin* uses the prometheus client python library to export performance metrics to a *Prometheus* instance. *Prometheus* enables real-time monitoring of your application and provides insights into the system performance to aid in optimization and debugging. You can learn more about prometheus at their website `<https://prometheus.io>`_. The table below describes the exported metrics:
 
-+-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
-| Name                    | Description                                                                                                                    | Type    |
-+=========================+================================================================================================================================+=========+
-| myosin_meta             | Installation metadata of the current myosin distribution                                                                       | Info    |
-+-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
-| myosin_active_contexts  | Number of active threads inside state context manager                                                                          | Gauge   |
-+-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
-| myosin_cb_exc_count     | Running counter of subscription callback exceptions                                                                            | Counter |
-+-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
-| myosin_commit_latency   | Latency of state commit invocations. Divides total number of commit requests by the total time spent performing commits.       | Summary |
-+-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
-| myosin_cache_latency    | Latency of state caching invocations. Divides total number of cache requests by the total time spent performing caches.        | Summary |
-+-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
-| myosin_checkout_latency | Latency of state checkout invocations. Divides total number of checkout requests by the total time spent performing checkouts. | Summary |
-+-------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| Name                        | Description                                                                                                                    | Type    |
++=============================+================================================================================================================================+=========+
+| ``myosin_meta``             | Installation metadata of the current myosin distribution                                                                       | Info    |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| ``myosin_active_contexts``  | Number of active threads inside state context manager                                                                          | Gauge   |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| ``myosin_cb_exc_count``     | Running counter of subscription callback exceptions                                                                            | Counter |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| ``myosin_commit_latency``   | Latency of state commit invocations. Divides total number of commit requests by the total time spent performing commits.       | Summary |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| ``myosin_cache_latency``    | Latency of state caching invocations. Divides total number of cache requests by the total time spent performing caches.        | Summary |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+| ``myosin_checkout_latency`` | Latency of state checkout invocations. Divides total number of checkout requests by the total time spent performing checkouts. | Summary |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
+
+*Myosin* categorizes most of these metrics using a ``model`` label which takes the qualifying class name of a state model. For example a query for commit latencies on a temperature sensor model ``DS18B20`` may look like: 
+.. code-block:: 
+
+  myosin_commit_latency{model="DS18B20"} 
 
 The github repository hosts an example program which demonstrates usage of the framework and provides a Grafana dashboard and some basic queries for visualizing these metrics.
 
-.. image:: ../_static/prometheus.png
-    :align: center
+.. figure:: ../_static/prometheus.png
+   :align: center
 
 Developer Tips
 --------------
