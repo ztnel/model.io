@@ -22,5 +22,6 @@ class CachePathError(CacheException):
 
 class NullCachePathError(CacheException):
     """
-    Raised on unset caching basepath. Basepath can be specified with the ``MYOSIN_CACHE_BASE_PATH``
+    Raised on unset caching basepath. Basepath must be specified with the ``MYOSIN_CACHE_BASE_PATH``
+    environment variable.
     """
