@@ -153,12 +153,12 @@ This will yield a logging output which will resemble a json document:
 
 .. code-block:: console
 
-User:
-{
-  "id": "d6c9e2b4-f07a-4ae4-b36f-30e49739085b",
-  "name": "cS",
-  "timestamp": 1661661213.072657
-}
+   User:
+   {
+   "id": "d6c9e2b4-f07a-4ae4-b36f-30e49739085b",
+   "name": "cS",
+   "timestamp": 1661661213.072657
+   }
 
 Testing
 -------
