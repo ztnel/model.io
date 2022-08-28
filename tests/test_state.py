@@ -11,12 +11,12 @@ import asyncio
 import logging
 from typing import Dict
 import unittest
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, patch
 
 from myosin.models.state import StateModel
 from myosin import State
 from myosin.state.ssm import SSM
-from myosin.exceptions.state import HashNotFound, NullCheckoutError, UninitializedStateError
+from myosin.exceptions.state import ModelNotFound, UninitializedStateError
 
 
 class TestState(unittest.TestCase):
@@ -45,21 +45,20 @@ class TestState(unittest.TestCase):
             self.state.load(self.test_state)
         self.test_state.load.assert_called_once()
 
-    @patch.object(State, "accessors", new_callable=PropertyMock)
-    def test_cm_lock(self, mock_accessors: MagicMock):
+    def test_cm_lock(self):
         """
         Test context manager lock aquisition and release
         """
         def mock_iter(_):
             for x in [a1, a2]:
                 yield x
-        mock_accessors.__iter__ = mock_iter
-        mock_state = State()
         a1, a2 = MagicMock(spec=SSM), MagicMock(spec=SSM)
-        mock_state._logger = MagicMock()
-        mock_state.accessors.__iter__ = mock_iter  # type:ignore
+        self.state._logger = MagicMock()
+        mock_accessors = MagicMock()
+        self.state.accessors = mock_accessors
+        mock_accessors.__iter__ = mock_iter
         # build mock accessors array and validate acquire and release are called iteratively
-        with State() as state:
+        with self.state:
             a1.lock.acquire.assert_called_once()
             a2.lock.acquire.assert_called_once()
         a1.lock.release.assert_called_once()
@@ -84,9 +83,9 @@ class TestState(unittest.TestCase):
 
     def test_null_checkout(self):
         """
-        Test null checkout fails with NullCheckoutError
+        Test null checkout fails with ModelNotFound
         """
-        with self.assertRaises(NullCheckoutError):
+        with self.assertRaises(ModelNotFound):
             _ = self.state.checkout(MagicMock)
 
     @patch.object(copy, "deepcopy")
@@ -106,7 +105,7 @@ class TestState(unittest.TestCase):
         Test unregistered state commit
         """
         mock_deepcopy.return_value = self.test_state
-        with self.assertRaises(HashNotFound):
+        with self.assertRaises(ModelNotFound):
             self.state.commit(self.test_state)
 
     @patch.object(copy, "deepcopy")
@@ -158,7 +157,7 @@ class TestState(unittest.TestCase):
         async def callback(demo: MagicMock) -> None: ...
         mock_ssm = self.mock_ssm(self.state._ssm)
         mock_ssm.get.return_value = None
-        with self.assertRaises(HashNotFound):
+        with self.assertRaises(ModelNotFound):
             self.state.subscribe(MagicMock, callback)
 
     def test_subscription(self):

@@ -1,0 +1,38 @@
+---
+version: "3.7"
+
+volumes:
+  prometheus-data: {}
+  grafana-data: {}
+
+services:
+  grafana:
+    image: grafana/grafana:8.5.4
+    container_name: grafana
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
+  prometheus:
+    image: prom/prometheus:v2.36.0
+    container_name: prometheus
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=200h'
+    ports:
+      - 9000:9090
+  example:
+    container_name: example
+    image: example
+    build:
+      context: ../../
+      dockerfile: example/docker/Dockerfile
+    volumes:
+      - ../../:/app

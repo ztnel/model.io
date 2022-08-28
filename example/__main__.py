@@ -3,6 +3,8 @@ import sys
 import time
 import logging
 
+from prometheus_client import start_http_server
+
 from myosin import State
 from threading import Thread
 from example.models import Telemetry
@@ -23,6 +25,7 @@ with State() as state:
     state.load(t)
     state.load(s)
 
+start_http_server(8000)
 mqtt = MQTTHandler()
 sensors = UARTInterface()
 mqtt_runner = Thread(target=mqtt.report_loop, args=(), daemon=True)

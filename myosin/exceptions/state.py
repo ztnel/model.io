@@ -1,26 +1,34 @@
 # -*- coding: utf-8 -*-
 """
 State Exceptions
-=====================
-Modified: 2021-11
+================
 """
 
 
 class StateException(Exception):
-    def __init__(self, msg: str = "StateIO encountered a general exception") -> None:
+    """
+    General state context exception.
+    """
+
+    def __init__(self, msg: str = "State encountered a general exception") -> None:
         self.message = msg
 
 
 class UninitializedStateError(StateException):
+    """
+    Raised if a registration request is made on a model with one or more uninitialized properties.
+    Verify the model can be serialized before it is registered with ``Model.serialize()``
+    """
+
     def __init__(self, msg: str = "") -> None:
         super().__init__(msg)
 
 
-class HashNotFound(StateException):
-    def __init__(self, msg: str = "The input model has an unexpected typehash") -> None:
-        super().__init__(msg=msg)
+class ModelNotFound(StateException):
+    """
+    Raised if the requested state model is not found in the internal state registry. Usually this 
+    means state actions are being requested on a model before it has been registered.
+    """
 
-
-class NullCheckoutError(StateException):
-    def __init__(self, msg: str = "The requested model does not exist in state registry") -> None:
+    def __init__(self, msg: str = "The requested model is not found") -> None:
         super().__init__(msg=msg)

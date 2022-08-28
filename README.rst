@@ -19,16 +19,16 @@ Myosin
 
 About
 -----
-*Myosin* is a lightweight framework for developing state-driven software systems. *Myosin* was originally designed to address scaling problems when developing embedded control systems with bidirectional command and control capabilities.
+*Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying developement and improving system scalability.
 
 Core Features
 ~~~~~~~~~~~~~
-#. Easy to use and customize
-#. Thread-safe Runtime Accessors
-#. State-driven Subscriber Queue
-#. Strictly Typed API
-#. Builtin Software Fault-Tolerance
-#. Built Exclusively using Python Standard Libraries
+#. Built on Python Standard Libraries
+#. Thread-safe Accessors
+#. Strictly Typed Object-Oriented API
+#. Built-in Fault-Tolerance
+#. State-driven Asynchrounous Callbacks
+#. `Prometheus <https://prometheus.io>`_ Monitoring
 
 Visit the `documentation page <https://myosin.readthedocs.io>`_ to learn more.
 

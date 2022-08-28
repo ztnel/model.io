@@ -15,7 +15,7 @@ class MQTTHandler:
 
     def report_loop(self) -> NoReturn:
         while True:
-            time.sleep(0.01)
+            time.sleep(1)
             with State(Telemetry) as state:
                 telemetry = state.checkout(Telemetry)
             try:

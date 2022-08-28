@@ -3,8 +3,6 @@
 State Model
 ===========
 
-Modified: 2022-05
-
 """
 
 import os
@@ -13,6 +11,7 @@ from json import JSONDecodeError
 from typing import Any, Dict, Optional
 
 from myosin.typing import _PKey
+from myosin.utils.metrics import Metrics as metrics
 from myosin.models.base import BaseModel
 from myosin.exceptions.cache import CachePathError, NullCachePathError
 
@@ -36,15 +35,16 @@ class StateModel(BaseModel):
         :raises NullCachePathError: if cache base path is not set 
         :raises CachePathError: if cache base path is not valid
         """
-        if not self.cache_base_path:
-            raise NullCachePathError(
-                f"Caching basepath is unset. set the {BP_ENV_VAR} environment variable before using model caching")
-        if not os.path.exists(self.cache_base_path):
-            raise CachePathError(f"Caching base path {self.cache_base_path} does not exist")
-        with open(self._cpath, 'w+') as json_file:
-            cached_payload = self.serialize()
-            json.dump(cached_payload, json_file)
-        self._logger.debug("Cached state model: %s", self)
+        with metrics.cache_latency.labels(f"{self.__class__.__name__}").time():
+            if not self.cache_base_path:
+                raise NullCachePathError(
+                    f"Caching basepath is unset. set the {BP_ENV_VAR} environment variable before using model caching")
+            if not os.path.exists(self.cache_base_path):
+                raise CachePathError(f"Caching base path {self.cache_base_path} does not exist")
+            with open(self._cpath, 'w+') as json_file:
+                cached_payload = self.serialize()
+                json.dump(cached_payload, json_file)
+            self._logger.debug("Cached state model: %s", self)
 
     def load(self) -> None:
         """
