@@ -1,8 +1,8 @@
 Myosin
 ======
-.. image:: https://badge.fury.io/py/myosin.svg
+.. image:: https://img.shields.io/pypi/v/myosin?color=blue
     :target: https://pypi.org/project/myosin/
-    :alt: PyPi Project
+    :alt: PyPi Version
 
 .. image:: https://github.com/ztnel/myosin/actions/workflows/ci.yaml/badge.svg
     :target: https://github.com/ztnel/myosin/actions/workflows/ci.yaml
@@ -16,10 +16,24 @@ Myosin
     :target: https://myosin.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://img.shields.io/pypi/l/myosin
+    :target: https://pypi.org/project/myosin/ 
+    :alt: PyPI - License
 
 About
 -----
 *Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying developement and improving system scalability.
+
+Installation
+------------
+
+*Myosin* is distributed on _PyPI  and can be installed using ``pip``:
+
+.. code-block:: console
+
+   $ pip install myosin
+
+.. _PyPI: https://pypi.python.org/pypi/sphinx_rtd_theme
 
 Core Features
 ~~~~~~~~~~~~~
