@@ -17,7 +17,7 @@ from myosin.typing import AsyncCallback
 from myosin.utils.funcs import pformat
 from myosin.utils.metrics import Metrics as metrics
 from myosin.models.state import StateModel
-from myosin.exceptions.state import HashNotFound, NullCheckoutError, UninitializedStateError
+from myosin.exceptions.state import ModelNotFound, UninitializedStateError
 
 # generic runtime model type
 _T = TypeVar('_T', bound=StateModel)
@@ -79,7 +79,7 @@ class State:
 
         :param state_type: 
         :type state_type: Type[_T]
-        :raises NullCheckoutError: if the requested state type does not exist
+        :raises ModelNotFound: if the requested state type does not exist
         :return: deep copy of requested state model
         :rtype: _T
         """
@@ -89,7 +89,7 @@ class State:
             self._logger.debug("Computed type hash: %s", _type_hash)
             ssm = self._ssm.get(_type_hash)
             if not ssm:
-                raise NullCheckoutError
+                raise ModelNotFound
             _copy = copy.deepcopy(ssm.ref)
         return _copy
 
@@ -101,7 +101,7 @@ class State:
         :type state: _T
         :param cache: cache the state to disk once updated, defaults to False
         :type cache: bool, optional
-        :raises HashNotFound: if system state has no state registered of the requested type
+        :raises ModelNotFound: if system state has no state registered of the requested type
         :return: updated system state reference
         :rtype: _T
         """
@@ -117,7 +117,7 @@ class State:
             if _type_hash not in self._ssm:
                 self._logger.error(
                     "Committed typehash: %s did not match any state model", _type_hash)
-                raise HashNotFound
+                raise ModelNotFound
             ssm = self._ssm[_type_hash]
             ssm.ref = state
             if len(ssm.queue) > 0:
@@ -141,7 +141,7 @@ class State:
         ssm = self._ssm.get(_type_hash)
         if not ssm:
             self._logger.error("Subscribed typehash: %s did not match any state model", _type_hash)
-            raise HashNotFound
+            raise ModelNotFound
         ssm.queue.append(callback)
 
     def reset(self) -> None:

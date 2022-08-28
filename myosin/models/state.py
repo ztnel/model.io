@@ -3,8 +3,6 @@
 State Model
 ===========
 
-Modified: 2022-05
-
 """
 
 import os
