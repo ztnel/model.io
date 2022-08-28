@@ -28,7 +28,7 @@ Core Features
 #. Strictly Typed Object-Oriented API
 #. Built-in Fault-Tolerance
 #. State-driven Asynchrounous Callbacks
-#. `Prometheus <https://prometheus.io>`_ Support
+#. `Prometheus <https://prometheus.io>`_ Monitoring
 
 Visit the `documentation page <https://myosin.readthedocs.io>`_ to learn more.
 
