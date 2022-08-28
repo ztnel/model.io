@@ -27,7 +27,7 @@ About
 Installation
 ------------
 
-*Myosin* is distributed on _PyPI  and can be installed using ``pip``:
+*Myosin* is distributed on PyPI_ and can be installed using ``pip``:
 
 .. code-block:: console
 
