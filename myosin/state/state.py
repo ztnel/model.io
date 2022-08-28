@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Myosin State Engine
-===================
-
-Modified: 2022-04
-
+State Context Manager 
+=====================
 """
 
 import copy
