@@ -1,29 +1,8 @@
 Myosin
 ======
-.. image:: https://img.shields.io/pypi/v/myosin?color=blue
-    :target: https://pypi.org/project/myosin/
-    :alt: PyPi Version
+|pypi| |ci| |cov| |rtd| |lic|
 
-.. image:: https://github.com/ztnel/myosin/actions/workflows/ci.yaml/badge.svg
-    :target: https://github.com/ztnel/myosin/actions/workflows/ci.yaml
-    :alt: Continuous Integration Status
-
-.. image:: https://codecov.io/gh/ztnel/myosin/branch/master/graph/badge.svg?token=G2DNQAGVIP
-    :target: https://codecov.io/gh/ztnel/myosin
-    :alt: Code Coverage Summary
-
-.. image:: https://readthedocs.org/projects/myosin/badge/?version=latest
-    :target: https://myosin.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
-
-.. image:: https://img.shields.io/pypi/l/myosin
-    :target: https://pypi.org/project/myosin/ 
-    :alt: PyPI - License
-|
-
-.. container:: header
-
-   *Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying development and improving system scalability.
+*Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying development and improving system scalability.
 
 
 Install
@@ -55,3 +34,18 @@ Contributions are welcome! Please see the `issue backlog <https://github.com/ztn
 License
 -------
 This project is licensed under the terms of the `MIT License <LICENSE>`_
+
+.. |pypi| image:: https://img.shields.io/pypi/v/myosin?color=blue
+    :target: https://pypi.org/project/myosin/
+
+.. |ci| image:: https://github.com/ztnel/myosin/actions/workflows/ci.yaml/badge.svg
+    :target: https://github.com/ztnel/myosin/actions/workflows/ci.yaml
+
+.. |cov| image:: https://codecov.io/gh/ztnel/myosin/branch/master/graph/badge.svg?token=G2DNQAGVIP
+    :target: https://codecov.io/gh/ztnel/myosin
+
+.. |rtd| image:: https://readthedocs.org/projects/myosin/badge/?version=latest
+    :target: https://myosin.readthedocs.io/en/latest/?badge=latest
+
+.. |lic| image:: https://img.shields.io/pypi/l/myosin
+    :target: https://pypi.org/project/myosin/ 
