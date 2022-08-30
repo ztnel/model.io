@@ -22,7 +22,7 @@ Myosin
 
 About
 -----
-*Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying developement and improving system scalability.
+*Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying development and improving system scalability.
 
 Installation
 ------------
@@ -41,7 +41,7 @@ Core Features
 #. Thread-safe Accessors
 #. Strictly Typed Object-Oriented API
 #. Built-in Fault-Tolerance
-#. State-driven Asynchrounous Callbacks
+#. State-driven Asynchronous Callbacks
 #. `Prometheus <https://prometheus.io>`_ Monitoring
 
 Visit the `documentation page <https://myosin.readthedocs.io>`_ to learn more.
