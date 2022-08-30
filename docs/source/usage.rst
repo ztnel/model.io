@@ -183,7 +183,7 @@ The github repository hosts an example program which demonstrates usage of the f
 Developer Tips
 --------------
 
-Thread Safety
+Thread-Safety
 ~~~~~~~~~~~~~
 In multi-threaded environments it is best practice to perform state model checkouts and commits inside the same locked state context. When a model is registered to the system state it is assigned a mutex for synchronizing access to that models resources. The state context requests a mutex for the resource passed into the state context on entry ensuring the checked out copy is up to date. The following code snippet is an example of undefined behaviour:
 
