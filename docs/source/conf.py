@@ -12,6 +12,8 @@
 #
 import os
 import sys
+from myosin import __version__
+
 sys.path.insert(0, os.path.abspath('../..'))
 
 
@@ -22,8 +24,8 @@ copyright = '2022, Christian Sargusingh'
 author = 'Christian Sargusingh'
 
 # The full version, including alpha/beta/rc tags
-release = 'v0.1.1'
-version = '0.1.1'
+release = f'v{__version__}'
+version = __version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -37,6 +39,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.autosectionlabel'
 ]
 
 autosummary_generate = True
