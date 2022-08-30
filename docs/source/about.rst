@@ -39,10 +39,10 @@ All public methods for access and modification to system state variables are str
 
 .. figure:: ../_static/typing.gif
     :align: center
+    
     Pylance type hint semantic highlighting on custom Myosin state model 
 
 
 Prometheus Monitoring
 ~~~~~~~~~~~~~~~~~~~~~
-*Myosin* uses the prometheus client python library to export performance metrics to a prometheus instance enabling real-time monitoring of your core application runtime and providing performance insights to aid system optimization and debugging.
-
+*Myosin* uses the prometheus python client to export performance metrics to a prometheus instance. This enables real-time monitoring of your core application runtime and provides performance insights to aid system optimization and debugging.
