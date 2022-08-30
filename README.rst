@@ -19,7 +19,7 @@ Myosin
 .. image:: https://img.shields.io/pypi/l/myosin
     :target: https://pypi.org/project/myosin/ 
     :alt: PyPI - License
-
+|
 
 .. container:: header
 
