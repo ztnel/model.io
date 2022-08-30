@@ -4,11 +4,11 @@ Usage
 System Requirements
 -------------------
 
-*Myosin* is best applied on embedded linux platforms. Some features of *myosin* are only written for POSIX compliant systems. Cross-platform support for all features is not currently being pursued.
+*Myosin* is best applied on embedded linux platforms. Some features are only compatible with POSIX compliant systems. Cross-platform support for all features is not currently being pursued.
 
 Supported Python Versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-The following table outlines the distributions and testing support for *myosin* against different python versions: 
+The following table outlines the distributions and testing support against different Python versions: 
 
 ====== =========== =============
 Python Distibution Test Suite
