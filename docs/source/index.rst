@@ -3,7 +3,7 @@
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   :numbered:
+   :numbered: 1
    
    about
    usage
