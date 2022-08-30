@@ -20,12 +20,11 @@ Myosin
     :target: https://pypi.org/project/myosin/ 
     :alt: PyPI - License
 
-About
------
+
 *Myosin* is an experimental framework for developing lightweight state-driven software systems. *Myosin* provides a flexible and homogenous strictly-typed API for facilitating data transactions between system modules simplifying development and improving system scalability.
 
-Installation
-------------
+Install
+-------
 
 *Myosin* is distributed on PyPI_ and can be installed using ``pip``:
 
@@ -35,8 +34,8 @@ Installation
 
 .. _PyPI: https://pypi.python.org/pypi/sphinx_rtd_theme
 
-Core Features
-~~~~~~~~~~~~~
+Features
+~~~~~~~~
 #. Built on Python Standard Libraries
 #. Thread-safe Accessors
 #. Strictly Typed Object-Oriented API
