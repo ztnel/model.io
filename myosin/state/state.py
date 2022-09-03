@@ -71,15 +71,17 @@ class State:
             self._logger.info("Released %s state lock", accessor)
         metrics.active_contexts.dec()
 
-    def load(self, model: StateModel) -> None:
+    def load(self, model: GenericModel) -> GenericModel:
         """
         Register :class:`myosin.models.state.StateModel` into global system state registry. 
         If a model of the same type is found in the system cache, overwrite default properties with
         that of the cached state.
 
         :param model: user-defined state model. Must implement :class:`myosin.models.state.StateModel`.
-        :type model: StateModel
+        :type model: GenericModel
         :raises UninitializedStateError: if user-defined state model cannot be serialized
+        :return: model loaded into state registry
+        :rtype: GenericModel 
         """
         # attempt to load a previously cached model into the system state.
         model.load()
@@ -89,8 +91,9 @@ class State:
         except AttributeError as exc:
             raise UninitializedStateError(
                 f"Failed to register model of type {type(model)}. Cannot be serialized.") from exc
-        self._ssm[model.__typehash__()] = SSM[StateModel](model)
+        self._ssm[model.__typehash__()] = SSM[GenericModel](model)
         self._logger.info("Loaded state model: %s", pformat(serialized_model))
+        return model
 
     def checkout(self, state_type: Type[GenericModel]) -> GenericModel:
         """
