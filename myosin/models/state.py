@@ -27,8 +27,8 @@ BP_ENV_VAR = "MYOSIN_CACHE_BASE_PATH"
 class StateModel(ABC):
     """
     System state model base class. Provides methods and properties required for use with the global
-    state context manager. Define a custom model by implementing ``StateModel`` and providing
-    overrides for the ``serialize`` and ``deserialize`` methods.
+    state context manager. Define a custom model by implementing this class and providing
+    overrides for the :func:`~StateModel.serialize` and :func:`~StateModel.deserialize` methods.
 
     .. code-block:: python
 
@@ -142,7 +142,7 @@ class StateModel(ABC):
 
     def load(self) -> None:
         """
-        Load contents from json into :class:`StateModel` using :func:`StateModel.deserialize`.
+        Load contents from json into :class:`~StateModel` using :func:`~StateModel.deserialize`.
         If document is not found, log a warning and continue. If the cached model fails to be read
         into the runtime context remove the document.
         """
@@ -169,8 +169,8 @@ class StateModel(ABC):
     @abstractmethod
     def serialize(self) -> Dict[str, Any]:
         """
-        Serialize :class:`StateModel` properties keys and values into a python dictionary. 
-        Key names should match :class:`StateModel` property names.
+        Serialize :class:`~StateModel` properties keys and values into a python dictionary. 
+        Key names should match :class:`~StateModel` property names.
 
         .. code-block:: python
 
