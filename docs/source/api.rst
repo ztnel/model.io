@@ -6,6 +6,11 @@ API Reference
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: myosin.models.state
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: myosin.exceptions.cache
     :members:
     :undoc-members:
