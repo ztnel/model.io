@@ -19,7 +19,7 @@ class StateException(Exception):
 class UninitializedStateError(StateException):
     """
     Raised if a registration request is made on a model with one or more uninitialized properties.
-    Verify the model can be serialized before it is registered with ``Model.serialize()``
+    Verify the model can be serialized before it is registered with :func:`StateModel.serialize`
     """
 
     def __init__(self, msg: str = "") -> None:
