@@ -16,5 +16,5 @@ __all__ = [
 
 #: :class:`myosin.models.state.StateModel` id type alias
 PrimaryKey = Union[int, str]
-#: :class:`myosin.models.state.StateModel` subscription callback type
+#: Asynchronous method type
 AsyncCallback = Coroutine[Any, Any, None]
