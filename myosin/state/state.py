@@ -58,8 +58,9 @@ class State:
 
     def load(self, model: StateModel) -> None:
         """
-        Register :class:`StateModel` into global system state registry. If a cached document has the
-        same model of the same type if available.
+        Register :class:`~myosin.models.state.StateModel` into global system state registry. 
+        If a model of the same type is found in the system cache, overwrite default properties with
+        that of the cached state.
 
         :param model: user-defined state model. Must implement :class:`StateModel`.
         :type model: StateModel
