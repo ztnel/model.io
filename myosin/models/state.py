@@ -142,18 +142,20 @@ class StateModel(ABC):
 
     def load(self) -> None:
         """
-        Load contents from json into state model
+        Load contents from json into :class:`StateModel` using :function:`StateModel.deserialize`.
+        If document is not found, log a warning and continue. If the cached model fails to be read
+        into the runtime context remove the document.
         """
         try:
             with open(self._cpath, 'r') as json_file:
-                device_payload: Dict[str, Any] = json.load(json_file)
+                payload: Dict[str, Any] = json.load(json_file)
         except JSONDecodeError as exc:
             self._logger.error("Model cache document corrupt:\n%s", exc)
             self.clear()
         except FileNotFoundError:
             self._logger.warning("Model not found in caching directory")
         else:
-            self.deserialize(**device_payload)
+            self.deserialize(**payload)
             self._logger.debug("Loaded state model: %s", self)
 
     def clear(self) -> None:
@@ -167,8 +169,8 @@ class StateModel(ABC):
     @abstractmethod
     def serialize(self) -> Dict[str, Any]:
         """
-        Serialize ``StateModel`` properties keys and values into a python dictionary. Key names should match
-        the property names.
+        Serialize :class:`StateModel` properties keys and values into a python dictionary. 
+        Key names should match :class:`StateModel` property names.
 
         .. code-block:: python
 
@@ -188,7 +190,7 @@ class StateModel(ABC):
     @abstractmethod
     def deserialize(self, **kwargs) -> None:
         """
-        Deserialize model properties keys and values from a python dictionary to a ``StateModel``. 
+        Deserialize model properties keys and values from a python dictionary to :class:`StateModel`. 
 
         .. code-block:: python
 
