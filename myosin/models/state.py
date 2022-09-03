@@ -37,6 +37,7 @@ class StateModel(ABC):
             def __init__(self) -> None:
                 super().__init__()
                 self.temperature = 25.5
+                self.timestamp = datetime.now().timestamp()
 
             @property
             def temperature(self) -> float:
@@ -48,7 +49,11 @@ class StateModel(ABC):
 
             @property
             def timestamp(self) -> float:
-                return datetime.now().timestamp()
+                return  self.__timestamp
+
+            @timestamp.setter
+            def timestamp(self, value: float) -> None:
+                self.__timestamp = value
 
             def serialize(self) -> Dict[str, Any]:
                 return {
@@ -59,8 +64,6 @@ class StateModel(ABC):
 
             def deserialize(self, **kwargs) -> None:
                 for k, v in kwargs.items():
-                    if k == "timestamp":
-                        continue
                     setattr(self, k, v)
     """
 
@@ -186,6 +189,12 @@ class StateModel(ABC):
     def deserialize(self, **kwargs) -> None:
         """
         Deserialize model properties keys and values from a python dictionary to a ``StateModel``. 
+
+        .. code-block:: python
+
+            def deserialize(self, **kwargs) -> None:
+                for k, v in kwargs.items():
+                    setattr(self, k, v)
 
         :raises NotImplementedError: if method is not overriden
         """
