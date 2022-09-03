@@ -10,10 +10,11 @@ from typing import Any, Coroutine, Union
 
 
 __all__ = [
-    "PrimaryKey"
+    "PrimaryKey",
+    "AsyncCallback"
 ]
 
-#: :class:`StateModel` id type alias
+#: :class:`~StateModel` id type alias
 PrimaryKey = Union[int, str]
-#: :class:`StateModel` subscription callback type
+#: :class:`~StateModel` subscription callback type
 AsyncCallback = Coroutine[Any, Any, None]
