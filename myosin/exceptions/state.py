@@ -2,6 +2,8 @@
 """
 State Exceptions
 ================
+
+Copyright © 2022 Christian Sargusingh. All rights reserved.
 """
 
 
