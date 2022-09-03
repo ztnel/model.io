@@ -4,11 +4,11 @@ Usage
 System Requirements
 -------------------
 
-*Myosin* is best applied on embedded linux platforms. Some features of *myosin* are only written for POSIX compliant systems. Cross-platform support for all features is not currently being pursued.
+*Myosin* is best applied on embedded linux platforms. Some features are only compatible with POSIX compliant systems. Cross-platform support for all features is not currently being pursued.
 
 Supported Python Versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-The following table outlines the distributions and testing support for *myosin* against different python versions: 
+The following table outlines the distributions and testing support against different Python versions: 
 
 ====== =========== =============
 Python Distibution Test Suite
@@ -41,7 +41,7 @@ Alternatively you can build from source:
 
 Basic Usage
 -----------
-Start by defining a model by creating a class that implements ``StateModel``. For example, we may want to track the active user in the application runtime. We define a model ``User`` with properties associated to a user:
+First we need to describe a shared resource. Start by creating a class that implements ``StateModel``. For example, we may want to track the active user in the application runtime. We define a model ``User`` with properties associated to a user:
 
 .. code-block:: python
 
@@ -81,6 +81,20 @@ Start by defining a model by creating a class that implements ``StateModel``. Fo
          for k, v in kwargs.items():
             setattr(self, k, v)
 
+Configuration
+~~~~~~~~~~~~~
+
+In the application entry, set the basepath of the caching directory by setting the ``MYOSIN_CACHE_BASE_PATH`` environment variable. This environment variable should be set prior to :ref:`model registration<Model Registration>`.
+
+.. code-block:: python
+
+   import os
+
+   os.environ["MYOSIN_CACHE_BASE_PATH"] = "/app/tmp/myosin"
+
+.. note::
+   Myosin will recursively create the directory tree in the basepath if the directories do not exist.
+
 Model Registration
 ~~~~~~~~~~~~~~~~~~
 
@@ -93,7 +107,7 @@ In the application entry, load the state model into the engine with default prop
       name="chris",
       email="chris@email.com"
    )
-
+   
    # register the model into the state engine
    with State() as state:
       state.load(usr)
@@ -153,7 +167,8 @@ Prometheus Metrics
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------------+---------+
 
 *Myosin* categorizes most of these metrics using a ``model`` label which takes the qualifying class name of a state model. For example a query for commit latencies on a temperature sensor model ``DS18B20`` may look like: 
-.. code-block:: 
+
+.. code-block:: console
 
   myosin_commit_latency{model="DS18B20"} 
 
@@ -162,12 +177,15 @@ The github repository hosts an example program which demonstrates usage of the f
 .. figure:: ../_static/prometheus.png
    :align: center
 
+   Grafana dashboard panels detailing time series metrics for myosin commit and caching latencies
+
+
 Developer Tips
 --------------
 
-Thread Safety
+Thread-Safety
 ~~~~~~~~~~~~~
-In multi-threaded environments it is best practice to perform system state model checkouts and commits inside the same locked state context. When a model is registered to the system state it is assigned a mutex for synchronizing access to that models resources. The state context requests a mutex for the resource passed into the state context on entry ensuring the checked out copy is up to date. The following code snippet is an example of undefined behaviour:
+In multi-threaded environments it is best practice to perform state model checkouts and commits inside the same locked state context. When a model is registered to the system state it is assigned a mutex for synchronizing access to that models resources. The state context requests a mutex for the resource passed into the state context on entry ensuring the checked out copy is up to date. The following code snippet is an example of undefined behaviour:
 
 .. code-block:: python
 
@@ -211,7 +229,7 @@ Long blocking function calls should be buffered outside the state context:
    email = long_blocking_transaction()
    with State(User) as state:
       user = state.checkout(User)
-      user.email = 
+      user.email = email
       state.commit(user)
 
 Logging
@@ -259,6 +277,6 @@ Run the tests using the ``nosetests`` utility:
 .. warning::
    The ``nosetests`` utility is no longer maintained and has compatibility issues with Python 3.10 as noted by this `issue thread <https://github.com/nose-devs/nose/issues/1099>`_. Therefore *myosin* unittests will not be executable on Python 3.10.
 
-   I am looking to migrate to pytest and would love contributor support in unittesting.
+   I am looking to migrate to pytest and would appreciate support in unit testing.
 
 The test runner will report the executed tests and generate a coverage report. The coverage goal for this library is 95% or greater. If you want to contribute and don't know how, this is a great place to start.
