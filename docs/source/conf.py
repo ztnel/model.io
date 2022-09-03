@@ -27,7 +27,7 @@ copyright = f'{year}, {author}'
 
 
 # The full version, including alpha/beta/rc tags
-release = f'v{__version__}'
+release = __version__
 version = __version__
 
 
