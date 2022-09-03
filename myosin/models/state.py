@@ -36,15 +36,15 @@ class StateModel(ABC):
 
             def __init__(self) -> None:
                 super().__init__()
-                self.tp = 25.5
+                self.temperature = 25.5
 
             @property
-            def tp(self) -> float:
-                return self.__tp
+            def temperature(self) -> float:
+                return self.__temperature
 
-            @tp.setter
-            def tp(self, value: float) -> None:
-                self.__tp = value
+            @temperature.setter
+            def temperature(self, value: float) -> None:
+                self.__temperature = value
 
             @property
             def timestamp(self) -> float:
@@ -53,7 +53,7 @@ class StateModel(ABC):
             def serialize(self) -> Dict[str, Any]:
                 return {
                     'id': self.id,
-                    'temp': self.tp,
+                    'temperature': self.temperature,
                     'timestamp': self.timestamp
                 }
 
@@ -85,7 +85,7 @@ class StateModel(ABC):
         """
         Get object hash
 
-        :return: _description_
+        :return: hash of python object
         :rtype: int
         """
         return super().__hash__()
@@ -163,8 +163,30 @@ class StateModel(ABC):
 
     @abstractmethod
     def serialize(self) -> Dict[str, Any]:
+        """
+        Serialize ``StateModel`` properties keys and values into a python dictionary. Key names should match
+        the property names.
+
+        .. code-block:: python
+
+            def serialize(self) -> Dict[str, Any]:
+                return {
+                    'id': self.id,
+                    'temperature': self.temperature,
+                    'timestamp': self.timestamp
+                }
+
+        :raises NotImplementedError: if method is not overriden
+        :return: serialized model as a python dictionary
+        :rtype: Dict[str, Any]
+        """
         raise NotImplementedError
 
     @abstractmethod
     def deserialize(self, **kwargs) -> None:
+        """
+        Deserialize model properties keys and values from a python dictionary to a ``StateModel``. 
+
+        :raises NotImplementedError: if method is not overriden
+        """
         raise NotImplementedError
