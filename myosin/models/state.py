@@ -142,7 +142,7 @@ class StateModel(ABC):
 
     def load(self) -> None:
         """
-        Load contents from json into :class:`StateModel` using :function:`StateModel.deserialize`.
+        Load contents from json into :class:`StateModel` using :func:`StateModel.deserialize`.
         If document is not found, log a warning and continue. If the cached model fails to be read
         into the runtime context remove the document.
         """
