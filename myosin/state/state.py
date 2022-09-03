@@ -9,7 +9,7 @@ Copyright © 2022 Christian Sargusingh. All rights reserved.
 import copy
 import asyncio
 import logging
-from typing import Dict, Type, Callable
+from typing import Dict, Type, Callable, TypeVar
 
 from myosin.state.ssm import SSM
 from myosin.typing import AsyncCallback
@@ -17,6 +17,9 @@ from myosin.utils.funcs import pformat
 from myosin.utils.metrics import Metrics as metrics
 from myosin.models.state import StateModel
 from myosin.exceptions.state import ModelNotFound, UninitializedStateError
+
+#: generic :class:`StateModel` type
+Model = TypeVar('Model', bound=StateModel)
 
 
 class State:
@@ -53,24 +56,27 @@ class State:
             self._logger.info("Released %s state lock", accessor)
         metrics.active_contexts.dec()
 
-    def load(self, model: StateModel) -> StateModel:
+    def load(self, model: StateModel) -> None:
         """
-        Load state model into state registry
+        Register :class:`StateModel` into global system state registry. If a cached document has the
+        same model of the same type if available.
 
-        :param model: state model
+        :param model: user-defined state model. Must implement :class:`StateModel`.
         :type model: StateModel
+        :raises UninitializedStateError: if user-defined state model cannot be serialized
         """
+        # attempt to load a previously cached model into the system state.
         model.load()
+        # validate the object is json serializable
         try:
             serialized_model = model.serialize()
         except AttributeError as exc:
-            raise UninitializedStateError from exc
-        else:
-            self._ssm[model.__typehash__()] = SSM[StateModel](model)
-            self._logger.info("Loaded state model: %s", pformat(serialized_model))
-        return model
+            raise UninitializedStateError(
+                f"Failed to register model of type {type(model)}. Cannot be serialized.") from exc
+        self._ssm[model.__typehash__()] = SSM[StateModel](model)
+        self._logger.info("Loaded state model: %s", pformat(serialized_model))
 
-    def checkout(self, state_type: Type[StateModel]) -> StateModel:
+    def checkout(self, state_type: Type[Model]) -> Model:
         """
         Returns a deepcopy of requested state model
 
@@ -90,7 +96,7 @@ class State:
             _copy = copy.deepcopy(ssm.ref)
         return _copy
 
-    def commit(self, state: StateModel, cache: bool = False) -> StateModel:
+    def commit(self, state: StateModel, cache: bool = False) -> None:
         """
         Commit new state to system state and update state subscriber callbacks
 
@@ -99,8 +105,6 @@ class State:
         :param cache: cache the state to disk once updated, defaults to False
         :type cache: bool, optional
         :raises ModelNotFound: if system state has no state registered of the requested type
-        :return: updated system state reference
-        :rtype: StateModel
         """
         with metrics.commit_latency.labels(f"{state.__class__.__qualname__}").time():
             # do not trust any external pass-by-reference objects!
@@ -123,9 +127,8 @@ class State:
             if cache:
                 state.cache()
                 self._logger.debug("Cached commited state model %s", state)
-        return state
 
-    def subscribe(self, state_type: Type[StateModel], callback: Callable[[StateModel], AsyncCallback]) -> None:
+    def subscribe(self, state_type: Type[Model], callback: Callable[[Model], AsyncCallback]) -> None:
         """
         Subscribe an asynchronous state change listener to a designated runtime model
 
@@ -145,7 +148,7 @@ class State:
         """
         Reset all loaded state models and clear cached documents
         """
+        self._logger.info("Resetting global system state")
         for _, ssm in self._ssm.items():
             ssm.ref.clear()
         self._ssm.clear()
-        self._logger.debug("Reset system state")
