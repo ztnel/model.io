@@ -3,8 +3,8 @@ from typing import Any, Coroutine, Union
 
 
 __all__ = [
-    "_PKey"
+    "PrimaryKey"
 ]
 
-_PKey = Union[int, str]
+PrimaryKey = Union[int, str]
 AsyncCallback = Coroutine[Any, Any, None]
