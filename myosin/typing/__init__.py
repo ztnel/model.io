@@ -13,7 +13,7 @@ __all__ = [
     "PrimaryKey"
 ]
 
-#: Hellow
+#: :class:`StateModel` id type alias
 PrimaryKey = Union[int, str]
-#: Hellow
+#: :class:`StateModel` subscription callback type
 AsyncCallback = Coroutine[Any, Any, None]
