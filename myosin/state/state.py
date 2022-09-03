@@ -84,7 +84,7 @@ class State:
         """
         Return a deepcopy of a registered user-defined state model.
 
-        :param state_type: user-defined registered state model type (implementing  :class:`myosin.models.state.StateModel`)
+        :param state_type: user-defined registered state model type
         :type state_type: Type[GenericModel]
         :raises ModelNotFound: if the requested state type does not exist
         :return: deep copy of requested state model
