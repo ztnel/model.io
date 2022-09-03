@@ -1,6 +1,9 @@
 API Reference
 =============
 
+.. automodule:: myosin.typing
+    :members:
+
 .. automodule:: myosin.state.state
     :members:
     :undoc-members:
