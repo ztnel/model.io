@@ -13,9 +13,11 @@
 import os
 import sys
 from myosin import __version__
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath('../..'))
-
+sys.path.insert(0, os.path.abspath(str(Path(__file__).parent.parent.resolve())))
+sys.path.insert(0, os.path.abspath(str(Path(__file__).parent.parent.joinpath("myosin/models"))))
+sys.path.insert(0, os.path.abspath(str(Path(__file__).parent.parent.joinpath("myosin/state"))))
 
 # -- Project information -----------------------------------------------------
 
