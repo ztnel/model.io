@@ -18,17 +18,20 @@ from myosin.utils.metrics import Metrics as metrics
 from myosin.models.state import StateModel
 from myosin.exceptions.state import ModelNotFound, UninitializedStateError
 
-#: generic :class:`~StateModel` type
+#: generic :class:`myosin.models.state.StateModel` type
 GenericModel = TypeVar('GenericModel', bound=StateModel)
 
 
 class State:
     """
-    State access context manager. Read, write or subscribe to registered :class:`~StateModel` objects. 
-    Request mutex locks on one or multiple state models by passing the model class in the 
-    initializer. If possible avoid nested context manager entry.
+    State access context manager. Read, write or subscribe to registered
+    :class:`myosin.models.state.StateModel` objects. Request mutex locks on one or multiple state 
+    models by passing the model class in the initializer. If possible avoid nested context manager 
+    entry.
 
     .. code-block:: python
+
+        from myosin import State
 
         with State(Model) as state:
             model = state.checkout(Model)
@@ -58,11 +61,11 @@ class State:
 
     def load(self, model: StateModel) -> None:
         """
-        Register :class:`~myosin.models.state.StateModel` into global system state registry. 
+        Register :class:`myosin.models.state.StateModel` into global system state registry. 
         If a model of the same type is found in the system cache, overwrite default properties with
         that of the cached state.
 
-        :param model: user-defined state model. Must implement :class:`StateModel`.
+        :param model: user-defined state model. Must implement :class:`myosin.models.state.StateModel`.
         :type model: StateModel
         :raises UninitializedStateError: if user-defined state model cannot be serialized
         """
@@ -81,7 +84,7 @@ class State:
         """
         Return a deepcopy of a registered user-defined state model.
 
-        :param state_type: user-defined registered state model type (implementing :class:`~StateModel`)
+        :param state_type: user-defined registered state model type (implementing  :class:`myosin.models.state.StateModel`)
         :type state_type: Type[GenericModel]
         :raises ModelNotFound: if the requested state type does not exist
         :return: deep copy of requested state model
