@@ -9,7 +9,7 @@ Copyright © 2022 Christian Sargusingh. All rights reserved.
 import copy
 import asyncio
 import logging
-from typing import Dict, Type, Callable, TypeVar
+from typing import Dict, Set, Type, Callable, TypeVar
 
 from myosin.state.ssm import SSM
 from myosin.typing import AsyncCallback
@@ -42,9 +42,21 @@ class State:
     _ssm: Dict[int, SSM] = {}
 
     def __init__(self, *args: Type[StateModel]) -> None:
+        """
+        Open a session for state model read and write operations.
+
+        :raises ModelNotFound: if requested state models are not registered.
+        """
         self._logger = logging.getLogger(__name__)
         # use set to ensure locking accessors are mutually exclusive
-        self.accessors = {self._ssm[hash(arg)] for arg in args}
+        self.accessors: Set[SSM] = set()
+        for arg in args:
+            try:
+                accessor = self._ssm[hash(arg)]
+            except KeyError as exc:
+                raise ModelNotFound(
+                    f"Could not identify model of type {arg}. Model is not registered.") from exc
+            self.accessors.add(accessor)
 
     def __enter__(self):
         metrics.active_contexts.inc()
