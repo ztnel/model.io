@@ -18,13 +18,13 @@ from myosin.utils.metrics import Metrics as metrics
 from myosin.models.state import StateModel
 from myosin.exceptions.state import ModelNotFound, UninitializedStateError
 
-#: generic :class:`StateModel` type
-Model = TypeVar('Model', bound=StateModel)
+#: generic :class:`~StateModel` type
+GenericModel = TypeVar('GenericModel', bound=StateModel)
 
 
 class State:
     """
-    State access context manager. Read, write or subscribe to registered ``StateModel`` objects. 
+    State access context manager. Read, write or subscribe to registered :class:`~StateModel` objects. 
     Request mutex locks on one or multiple state models by passing the model class in the 
     initializer. If possible avoid nested context manager entry.
 
@@ -76,15 +76,15 @@ class State:
         self._ssm[model.__typehash__()] = SSM[StateModel](model)
         self._logger.info("Loaded state model: %s", pformat(serialized_model))
 
-    def checkout(self, state_type: Type[Model]) -> Model:
+    def checkout(self, state_type: Type[GenericModel]) -> GenericModel:
         """
-        Returns a deepcopy of requested state model
+        Return a deepcopy of a registered user-defined state model.
 
-        :param state_type: 
-        :type state_type: Type[StateModel]
+        :param state_type: user-defined registered state model type (implementing :class:`~StateModel`)
+        :type state_type: Type[GenericModel]
         :raises ModelNotFound: if the requested state type does not exist
         :return: deep copy of requested state model
-        :rtype: StateModel
+        :rtype: GenericModel
         """
         with metrics.checkout_latency.labels(f"{state_type.__qualname__}").time():
             self._logger.info("Checking out state model of type %s", state_type)
@@ -128,14 +128,14 @@ class State:
                 state.cache()
                 self._logger.debug("Cached commited state model %s", state)
 
-    def subscribe(self, state_type: Type[Model], callback: Callable[[Model], AsyncCallback]) -> None:
+    def subscribe(self, state_type: Type[GenericModel], callback: Callable[[GenericModel], AsyncCallback]) -> None:
         """
         Subscribe an asynchronous state change listener to a designated runtime model
 
         :param state_type: model type to subscribe to
-        :type state_type: Type[StateModel]
+        :type state_type: Type[GenericModel]
         :param callback: state change listener callback
-        :type callback: Callable[[StateModel], AsyncCallback]
+        :type callback: Callable[[GenericModel], AsyncCallback]
         """
         _type_hash = hash(state_type)
         ssm = self._ssm.get(_type_hash)
