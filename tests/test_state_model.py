@@ -2,7 +2,7 @@
 """
 State Model Unittests
 =====================
-Modified: 2022-03
+Modified: 2022-09
 """
 
 import os
@@ -48,10 +48,10 @@ class TestStateModel(unittest.TestCase):
         self.assertEqual(self.state.__typehash__(), self.comparator.__typehash__())
 
     @patch.object(StateModel, "serialize")
-    @patch("myosin.models.base.pformat")
+    @patch("myosin.models.state.pformat")
     def test_repr(self, mock_pformat: MagicMock, mock_serialize: MagicMock):
         """
-        Test base model repr
+        Test state model repr
         """
         mock_serial = MagicMock()
         mock_serialize.return_value = mock_serial
