@@ -125,8 +125,7 @@ class TestState(unittest.TestCase):
         """
         mock_deepcopy.return_value = self.test_state
         self.state._ssm[self.test_state.__typehash__()] = self.test_ssm
-        res_state = self.state.commit(self.test_state)
-        self.assertEqual(res_state, self.test_state)
+        self.state.commit(self.test_state)
 
     @unittest.skip("Refactoring async implementation")
     @patch.object(copy, "deepcopy")

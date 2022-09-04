@@ -12,19 +12,22 @@
 #
 import os
 import sys
+import datetime
 from myosin import __version__
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath('../..'))
-
+sys.path.insert(0, os.path.abspath(str(Path(__file__).parent.parent.resolve())))
 
 # -- Project information -----------------------------------------------------
 
 project = 'Myosin'
-copyright = '2022, Christian Sargusingh'
+year = datetime.date.today().year
 author = 'Christian Sargusingh'
+copyright = f'{year}, {author}'
+
 
 # The full version, including alpha/beta/rc tags
-release = f'v{__version__}'
+release = __version__
 version = __version__
 
 

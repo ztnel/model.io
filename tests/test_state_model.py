@@ -2,7 +2,7 @@
 """
 State Model Unittests
 =====================
-Modified: 2022-03
+Modified: 2022-09
 """
 
 import os
@@ -29,10 +29,53 @@ class TestStateModel(unittest.TestCase):
     def setUp(self) -> None:
         logging.disable()
         self.state = StateModel(1)  # type: ignore
+        self.comparator = StateModel()  # type: ignore
 
     def tearDown(self) -> None:
         del self.state
         logging.disable(logging.NOTSET)
+
+    def test_hash(self):
+        """
+        Test hashing
+        """
+        self.assertNotEqual(self.state.__hash__(), self.comparator.__hash__())
+
+    def test_typehash(self):
+        """
+        Test type hashing
+        """
+        self.assertEqual(self.state.__typehash__(), self.comparator.__typehash__())
+
+    @patch.object(StateModel, "serialize")
+    @patch("myosin.models.state.pformat")
+    def test_repr(self, mock_pformat: MagicMock, mock_serialize: MagicMock):
+        """
+        Test state model repr
+        """
+        mock_serial = MagicMock()
+        mock_serialize.return_value = mock_serial
+        self.state.__repr__()
+        mock_pformat.assert_called_once_with(mock_serial)
+
+    def test_eq(self):
+        """
+        Test base model equality comparator
+        """
+        # test base model comparisons with different ids
+        self.assertFalse(self.state == self.comparator)
+        # test base model comparison with same id
+        self.comparator.id = 1
+        self.assertTrue(self.state == self.comparator)
+        # test non model comparison
+        self.assertFalse(self.state == object())
+
+    def test_id(self):
+        """
+        Test base model id get/set
+        """
+        self.state.id = 2
+        self.assertEqual(self.state.id, 2)
 
     def test_null_cache_path(self):
         """

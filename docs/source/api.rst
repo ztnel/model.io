@@ -1,7 +1,15 @@
 API Reference
 =============
 
+.. automodule:: myosin.typing
+    :members:
+
 .. automodule:: myosin.state.state
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: myosin.models.state
     :members:
     :undoc-members:
     :show-inheritance:
