@@ -69,7 +69,7 @@ class StateModel(ABC):
 
     def __init__(self, _id: Optional[PrimaryKey] = None) -> None:
         self._logger = logging.getLogger(__name__)
-        if not _id:
+        if _id is None:
             _id = str(uuid.uuid4())
         self.id = _id
         self.cache_base_path = os.environ.get(BP_ENV_VAR)
