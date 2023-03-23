@@ -66,7 +66,14 @@ class SSM(Generic[_S]):
     def queue(self, queue: List[Callable[[_S], AsyncCallback]]) -> None:
         self.__queue = queue
 
-    async def execute(self) -> None:
+    def execute(self) -> None:
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+        loop.run_until_complete(self.cb_runner())
+
+    async def cb_runner(self) -> None:
         """
         Executes all subscriber coroutines with new model reference.
         """

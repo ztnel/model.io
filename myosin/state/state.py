@@ -7,7 +7,6 @@ Copyright © 2022 Christian Sargusingh. All rights reserved.
 """
 
 import copy
-import asyncio
 import logging
 from typing import Dict, Set, Type, Callable, TypeVar
 
@@ -142,7 +141,7 @@ class State:
             ssm.ref = state
             if len(ssm.queue) > 0:
                 self._logger.debug("Executing asynchronous callback queue")
-                asyncio.run(ssm.execute())
+                ssm.execute()
             if cache:
                 state.cache()
                 self._logger.debug("Cached commited state model %s", state)
