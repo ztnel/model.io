@@ -142,7 +142,7 @@ class State:
             ssm.ref = state
             if len(ssm.queue) > 0:
                 self._logger.debug("Executing asynchronous callback queue")
-                asyncio.run(ssm.execute())
+                ssm.execute()
             if cache:
                 state.cache()
                 self._logger.debug("Cached commited state model %s", state)
