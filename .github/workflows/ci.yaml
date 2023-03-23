@@ -21,7 +21,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: setup python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: install lint dependancies
@@ -36,7 +36,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: set up python 3.9
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: install dependancies
@@ -60,7 +60,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: set up python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: install myosin
