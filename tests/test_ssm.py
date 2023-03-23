@@ -23,7 +23,7 @@ class TestAsync(unittest.IsolatedAsyncioTestCase):
         del self.ssm
         logging.disable(logging.NOTSET)
 
-    async def test_execute(self):
+    async def test_cb_runner(self):
         """
         Test execution runner and exception reporting
         """
@@ -31,7 +31,7 @@ class TestAsync(unittest.IsolatedAsyncioTestCase):
         alpha_cb.side_effect = BaseException
         beta_cb = AsyncMock()
         self.ssm.queue = [alpha_cb, beta_cb]
-        await self.ssm.execute()
+        await self.ssm.cb_runner()
         alpha_cb.assert_called_once()
         beta_cb.assert_called_once()
 
