@@ -2,6 +2,19 @@
 Changelog
 *********
 
+0.2b2
+======
+
+Fixed
+-----
+* ``StateModel`` subscriber callbacks can now be invoked in threads with an active ``asyncio`` event loop (`#63`_)
+
+Changed
+-------
+* Bumped packaged ``prometheus-client`` to ``0.16.0`` (`#63`_)
+
+.. _#63: https://github.com/ztnel/myosin/pull/63
+
 0.2b1
 ======
 
