@@ -14,6 +14,7 @@ import asyncio
 import traceback
 from threading import Lock
 from typing import Generic, List, Tuple, TypeVar, Callable
+from asyncio.events import AbstractEventLoop
 
 from myosin.utils.metrics import Metrics as metrics
 from myosin.models.state import StateModel
@@ -67,11 +68,20 @@ class SSM(Generic[_S]):
         self.__queue = queue
 
     def execute(self) -> None:
+        """
+        Schedule callbacks for either synchronous and asynchrounous runtimes.
+        """
+        loop = self._get_asyncio_ctx()
+        if loop.is_running():
+            self._logger.debug("Loop is running schedule callbacks")
+            loop.create_task(self.cb_runner(), name=f"cb_runner_{self}")
+            return
+        self._logger.debug("Loop is not running, start event loop and schedule callbacks")
         try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-        loop.run_until_complete(self.cb_runner())
+            loop.run_until_complete(self.cb_runner())
+        finally:
+            loop.run_until_complete(loop.shutdown_asyncgens())
+            loop.close()
 
     async def cb_runner(self) -> None:
         """
@@ -94,3 +104,15 @@ class SSM(Generic[_S]):
                                    "".join(traceback.format_exception(
                                        etype=type(exc), value=exc, tb=exc.__traceback__
                                    )))
+
+    def _get_asyncio_ctx(self) -> AbstractEventLoop:
+        """
+        Return running event loop if available otherwise build new event loop using default policy
+        """
+        try:
+            loop = asyncio.get_running_loop()
+            self._logger.debug("Detected running event loop.")
+        except RuntimeError:
+            self._logger.debug("No running event loop detected. Creating new event loop using default policy.")
+            loop = asyncio.new_event_loop()
+        return loop
