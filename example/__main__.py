@@ -33,7 +33,7 @@ def synchronous(mqtt: MQTTHandler, sensors:UARTInterface):
 async def asynchronous(mqtt:MQTTHandler, sensors:UARTInterface):
     loop = asyncio.get_running_loop()
     tasks = [
-        loop.create_task(mqtt.async_report_loop()),
+        loop.create_task(mqtt.async_loop()),
         loop.create_task(sensors.async_report_loop())
     ]
     await asyncio.gather(*tasks)
@@ -56,3 +56,4 @@ start_http_server(8000)
 mqtt = MQTTHandler()
 sensors = UARTInterface()
 asyncio.run(asynchronous(mqtt, sensors))
+# synchronous(mqtt, sensors)
