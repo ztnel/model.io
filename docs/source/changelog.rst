@@ -2,6 +2,16 @@
 Changelog
 *********
 
+
+0.2.3
+======
+
+Fixed
+-----
+* Bug in running ``StateModel`` commit callbacks in a thread with an active `asyncio` event loop has been fixed. Callbacks are now scheduled within the active event loop if available, otherwise a new event loop is created to execute the callbacks asynchronously (`#65`_)
+
+.. _#65: https://github.com/ztnel/myosin/pull/65
+
 0.2b2
 ======
 
