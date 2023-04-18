@@ -1,0 +1,108 @@
+[project]
+name = "myosin"
+description = "Lightweight state management engine."
+authors = [
+    {name = "Christian Sargusingh", email = "christian@leapsystems.online"}
+]
+requires-python = ">=3.8"
+dynamic = [ "version" ]
+readme = "README.rst"
+license = {file = "LICENSE"}
+classifiers=[
+    # Trove classifiers
+    # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    'Operating System :: Unix',
+    'Development Status :: 4 - Beta',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'License :: OSI Approved :: MIT License',
+    'Topic :: Software Development :: Object Brokering',
+    'Topic :: Software Development :: Embedded Systems',
+]
+
+[project.urls]
+homepage = "https://github.com/ztnel/myosin"
+documentation = "https://myosin.readthedocs.io"
+repository = "https://github.com/ztnel/myosin"
+changelog = "https://github.com/ztnel/myosin/blob/master/docs/source/changelog.rst"
+
+[project.optional-dependencies]
+prom = [
+    "prometheus-client==0.16.0",
+]
+test = [
+    "coverage[toml]",
+    "pytest-cov",
+    "pytest",
+    "flake8",
+    "Flake8-pyproject"
+]
+
+[tool.setuptools]
+packages = ["myosin"]
+[tool.setuptools.dynamic]
+version = {attr = "myosin.__version__"}
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[metadata]
+include_package_data = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "@(abc\\.)?abstractmethod"
+]
+omit = [
+    "*/__init__.py",
+    "*/__version__.py",
+]
+show_missing = true
+skip_empty = false
+
+[tool.coverage.run]
+source = [ "myosin" ]
+omit = [
+    "*/__pycache__/*",
+    "tests/*",
+    "*/__init__.py",
+    "*/__version__.py"
+]
+
+[tool.flake8]
+exclude = [
+    "__pycache__",
+    "tests"
+]
+ignore = [
+    "E3",
+    "E701",
+    "E704",
+    "W293",
+    "E128",
+    "W504",
+    "W291",
+    "W503"
+]
+max-line-length = 120
+show-source = 1
+builtins = "self"
+count = 1
+statistics = 1
+
+[tool.autopep8]
+max_line_length = 120
+ignore = [ "E701" ]
+
+[tool.pytest.ini_options]
+addopts = "--cov=myosin -s -v"
+testpaths = [
+    "tests"
+]
