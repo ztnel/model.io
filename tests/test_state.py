@@ -13,9 +13,9 @@ from typing import Dict
 import unittest
 from unittest.mock import MagicMock, patch
 
-from myosin.models.state import StateModel
+from myosin.core.model import StateModel
 from myosin import State
-from myosin.state.ssm import SSM
+from myosin.core.ssm import SSM
 from myosin.exceptions.state import ModelNotFound, UninitializedStateError
 
 

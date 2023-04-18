@@ -11,7 +11,7 @@ import unittest
 import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 from threading import Lock
-from myosin.state.ssm import SSM
+from myosin.core.ssm import SSM
 from tests.resources.models import DemoState
 
 

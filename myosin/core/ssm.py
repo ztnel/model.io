@@ -15,7 +15,7 @@ import traceback
 from threading import Lock
 from typing import Generic, Tuple, TypeVar
 from asyncio.events import AbstractEventLoop
-from myosin.core.event import EType, Event
+from myosin.core.event import Event, ReconPolicy, StateEvent
 
 from myosin.utils.metrics import Metrics as metrics
 from myosin.core.model import StateModel
@@ -31,7 +31,8 @@ class SSM(Generic[_S]):
         self.desired = reference
         self.reported = reference
         self.lock = Lock()
-        self.event_queue: list[Event[_S]] = []
+        self.desired_events: list[Event[_S]] = []
+        self.reported_events: list[Event[_S]] = []
 
     def __str__(self) -> str:
         return f"{self.reported.__class__.__qualname__}"
@@ -72,38 +73,45 @@ class SSM(Generic[_S]):
     def delta(self) -> dict:
         return self._filter_delta(self.reported.serialize(), self.desired.serialize())
 
+    def add_event(self, event: StateEvent, callback) -> None:
+        event_queue = self.desired_events if event == StateEvent.DESIRED else self.reported_events
+        e = Event(ReconPolicy.NEVER, callback)
+        event_queue.append(e)
+
+    def resolve(self, state: _S, event: StateEvent) -> None:
+        if event == StateEvent.DESIRED:
+            self.desired = state
+            self.resolve_desired(state)
+        else:
+            self.reported = state
+            self.resolve_reported(state)
+
     def resolve_desired(self, state: _S) -> None:
-        desired_events = list(filter(lambda x: x.etype == EType.DESIRED, self.event_queue))
-        self.desired = state
-        if self.delta == {}:
+        delta = self.delta  # only compute property once for efficiency!
+        self._logger.warning("Delta: %s", delta)
+        if delta == {}:
             # send notification of reconcilation and return
             self._logger.debug("Reconciled desired changes for state model: %s", state)
-            return
         # have deltas to resolve
-        # get all property level desired events
-        queued_events = []
-        prop_desired_events = list(filter(lambda x: x.prop != None, desired_events))
-        for k, v in self.delta.items():
-            if k in [x.prop for x in prop_desired_events]:
-                queued_events.append()
+
         # perform policy checks
 
         # if policy not met failed reset desired to reported to reconcile
 
-        if len(desired_events) > 0:
+        if len(self.desired_events) > 0:
             self._logger.debug("Executing asynchronous callback queue")
-            self._execute(events)
+            self._execute(self.desired_events)
 
     def resolve_reported(self, state: _S) -> None:
-        reported_events = list(filter(lambda x: x.etype == EType.REPORTED, self.event_queue))
-        self.reported = state
-        if self.delta == {}:
+        delta = self.delta  # only compute property once for efficiency!
+        self._logger.warning("Delta: %s", delta)
+        if delta == {}:
             # send notification of reconcilation and return
             self._logger.debug("Reconciled desired changes for state model: %s", state)
             return
-        if len(reported_events) > 0:
+        if len(self.reported_events) > 0:
             self._logger.debug("Executing asynchronous callback queue")
-            self._execute(events)
+            self._execute(self.reported_events)
 
     def _execute(self, events: list[Event]) -> None:
         """
@@ -125,7 +133,7 @@ class SSM(Generic[_S]):
         """
         Executes all subscriber coroutines with new model reference.
         """
-        tasks = [event.callback(self.reported) for event in events]
+        tasks = [event.callback(self.desired, self.delta) for event in events]
         # return results from coroutines with exceptions if any
         results = await asyncio.gather(*tasks, return_exceptions=True)
         # increment execution counters
@@ -143,7 +151,7 @@ class SSM(Generic[_S]):
             self._logger.exception("Subscriber function: %s encountered an exception: %s", func,
                                    "".join(traceback.format_exception(
                                        etype=type(exc), value=exc, tb=exc.__traceback__
-                                   )))
+                                   )))  # type: ignore
 
     def _get_asyncio_ctx(self) -> AbstractEventLoop:
         """

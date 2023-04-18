@@ -9,6 +9,7 @@ Copyright © 2022 Christian Sargusingh. All rights reserved.
 import copy
 import logging
 from typing import Any, Coroutine, Dict, Set, Type, Callable, TypeVar
+from myosin.core.event import StateEvent
 
 from myosin.core.ssm import SSM
 from myosin.utils.funcs import pformat
@@ -60,13 +61,13 @@ class State:
         metrics.active_contexts.inc()
         for accessor in self.accessors:
             accessor.lock.acquire()
-            self._logger.info("Acquired %s state lock", accessor)
+            self._logger.debug("Acquired %s state lock", accessor)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         for accessor in self.accessors:
             accessor.lock.release()
-            self._logger.info("Released %s state lock", accessor)
+            self._logger.debug("Released %s state lock", accessor)
         metrics.active_contexts.dec()
 
     def load(self, model: GenericModel) -> GenericModel:
@@ -106,14 +107,13 @@ class State:
         with metrics.checkout_latency.labels(f"{state_type.__qualname__}").time():
             self._logger.info("Checking out state model of type %s", state_type)
             _type_hash = hash(state_type)
-            self._logger.debug("Computed type hash: %s", _type_hash)
             ssm = self._ssm.get(_type_hash)
             if not ssm:
                 raise ModelNotFound
             _copy = copy.deepcopy(ssm.reported)
         return _copy
 
-    def commit(self, state: StateModel, cache: bool = False, desired: bool = False) -> None:
+    def commit(self, state: StateModel, event: StateEvent = StateEvent.DESIRED, cache: bool = False) -> None:
         """
         Commit new state to system state and update state subscriber callbacks
 
@@ -126,18 +126,20 @@ class State:
         with metrics.commit_latency.labels(f"{state.__class__.__qualname__}").time():
             # do not trust any external pass-by-reference objects!
             state = copy.deepcopy(state)
-            self._logger.info("Committing state model of type %s with cache mode: %s",
-                              type(state), "enabled" if cache else "disabled")
+            self._logger.debug(
+                "Committing %s state model %s with cache mode: %s",
+                "desired" if event == StateEvent.DESIRED else "reported", type(
+                    state), "enabled" if cache else "disabled"
+            )
             # automatic type inference by typehash
             _type_hash = state.__typehash__()
-            self._logger.debug("Computed type hash: %s", _type_hash)
             # verify typehash exists in ssm registry
             if _type_hash not in self._ssm:
                 self._logger.error(
                     "Committed typehash: %s did not match any state model", _type_hash)
                 raise ModelNotFound
             ssm = self._ssm[_type_hash]
-            ssm.resolve_desired(state) if desired else ssm.resolve_reported(state)
+            ssm.resolve(state, event)
             if cache:
                 state.cache()
                 self._logger.debug("Cached commited state model %s", state)
@@ -145,9 +147,8 @@ class State:
     def subscribe(
             self,
             state_type: Type[GenericModel],
-            callback: Callable[[GenericModel], Coroutine[Any, Any, None]],
-            property: property,
-            on_desired: bool = True) -> None:
+            callback: Callable[[GenericModel, dict], Coroutine[Any, Any, None]],
+            event: StateEvent = StateEvent.DESIRED) -> None:
         """
         Subscribe an asynchronous state change listener to a designated runtime model
 
@@ -161,10 +162,7 @@ class State:
         if not ssm:
             self._logger.error("Subscribed typehash: %s did not match any state model", _type_hash)
             raise ModelNotFound
-        if on_desired:
-            ssm.desired_queue.append(callback)
-        else:
-            ssm.report_queue.append(callback)
+        ssm.add_event(event, callback)
 
     def reset(self) -> None:
         """
