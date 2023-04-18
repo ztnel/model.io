@@ -22,7 +22,6 @@ __all__ = [
     'State'
 ]
 __author__ = "Christian Sargusingh <christian@leapsystems.online>"
-
 _log = logging.getLogger(__name__)
 _log.info("Myosin version %s", __version__)
 # export version to prometheus
