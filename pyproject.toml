@@ -29,15 +29,13 @@ repository = "https://github.com/ztnel/myosin"
 changelog = "https://github.com/ztnel/myosin/blob/master/docs/source/changelog.rst"
 
 [project.optional-dependencies]
-prom = [
-    "prometheus-client==0.16.0",
-]
-test = [
+dev = [
     "coverage[toml]",
     "pytest-cov",
     "pytest",
     "flake8",
-    "Flake8-pyproject"
+    "Flake8-pyproject",
+    "autopep8"
 ]
 
 [tool.setuptools]
