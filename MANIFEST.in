@@ -1,0 +1,3 @@
+graft myosin 
+recursive-exclude tests *
+global-exclude *.py[co]
