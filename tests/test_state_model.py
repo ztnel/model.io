@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch, mock_open
 from tests.resources.errors import JSON_DECODE_ERROR
 from tests.resources.models import SERIALIZED_MODEL
 
-from myosin.models.state import StateModel
+from myosin.core.model import StateModel
 from myosin.exceptions.cache import CachePathError, NullCachePathError
 
 

@@ -8,14 +8,13 @@ Copyright © 2022 Christian Sargusingh. All rights reserved.
 
 import copy
 import logging
-from typing import Dict, Set, Type, Callable, TypeVar
+from typing import Any, Coroutine, Dict, Set, Type, Callable, TypeVar
 
-from myosin.state.ssm import SSM
-from myosin.typing import AsyncCallback
+from myosin.core.ssm import SSM
 from myosin.utils.funcs import pformat
 from myosin.utils.metrics import Metrics as metrics
-from myosin.models.state import StateModel
-from myosin.exceptions.state import ModelNotFound, UninitializedStateError
+from myosin.core.model import StateModel
+from myosin.core.exceptions import ModelNotFound, UninitializedStateError
 
 #: generic :class:`myosin.models.state.StateModel` type
 GenericModel = TypeVar('GenericModel', bound=StateModel)
@@ -96,9 +95,9 @@ class State:
 
     def checkout(self, state_type: Type[GenericModel]) -> GenericModel:
         """
-        Return a deepcopy of a registered user-defined state model.
+        Return a deepcopy of a reported registered user-defined state model.
 
-        :param state_type: user-defined registered state model type
+        :param state_type: reported user-defined registered state model type
         :type state_type: Type[GenericModel]
         :raises ModelNotFound: if the requested state type does not exist
         :return: deep copy of requested state model
@@ -111,10 +110,10 @@ class State:
             ssm = self._ssm.get(_type_hash)
             if not ssm:
                 raise ModelNotFound
-            _copy = copy.deepcopy(ssm.ref)
+            _copy = copy.deepcopy(ssm.reported)
         return _copy
 
-    def commit(self, state: StateModel, cache: bool = False) -> None:
+    def commit(self, state: StateModel, cache: bool = False, desired: bool = False) -> None:
         """
         Commit new state to system state and update state subscriber callbacks
 
@@ -138,29 +137,34 @@ class State:
                     "Committed typehash: %s did not match any state model", _type_hash)
                 raise ModelNotFound
             ssm = self._ssm[_type_hash]
-            ssm.ref = state
-            if len(ssm.queue) > 0:
-                self._logger.debug("Executing asynchronous callback queue")
-                ssm.execute()
+            ssm.resolve_desired(state) if desired else ssm.resolve_reported(state)
             if cache:
                 state.cache()
                 self._logger.debug("Cached commited state model %s", state)
 
-    def subscribe(self, state_type: Type[GenericModel], callback: Callable[[GenericModel], AsyncCallback]) -> None:
+    def subscribe(
+            self,
+            state_type: Type[GenericModel],
+            callback: Callable[[GenericModel], Coroutine[Any, Any, None]],
+            property: property,
+            on_desired: bool = True) -> None:
         """
         Subscribe an asynchronous state change listener to a designated runtime model
 
         :param state_type: model type to subscribe to
         :type state_type: Type[GenericModel]
         :param callback: state change listener callback
-        :type callback: Callable[[GenericModel], AsyncCallback]
+        :type callback: Callable[[GenericModel], Coroutine[Any, Any, None]]
         """
         _type_hash = hash(state_type)
         ssm = self._ssm.get(_type_hash)
         if not ssm:
             self._logger.error("Subscribed typehash: %s did not match any state model", _type_hash)
             raise ModelNotFound
-        ssm.queue.append(callback)
+        if on_desired:
+            ssm.desired_queue.append(callback)
+        else:
+            ssm.report_queue.append(callback)
 
     def reset(self) -> None:
         """
@@ -168,5 +172,5 @@ class State:
         """
         self._logger.info("Resetting global system state")
         for _, ssm in self._ssm.items():
-            ssm.ref.clear()
+            ssm.reported.clear()
         self._ssm.clear()

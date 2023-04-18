@@ -10,16 +10,14 @@ Copyright © 2022 Christian Sargusingh. All rights reserved.
 
 import os
 import json
-import uuid
 import logging
 from json import JSONDecodeError
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from abc import ABC, abstractmethod
 
-from myosin.typing import PrimaryKey
 from myosin.utils.funcs import pformat
 from myosin.utils.metrics import Metrics as metrics
-from myosin.exceptions.cache import CachePathError, NullCachePathError
+from myosin.core.exceptions import CachePathError, NullCachePathError
 
 BP_ENV_VAR = "MYOSIN_CACHE_BASE_PATH"
 
@@ -67,11 +65,8 @@ class StateModel(ABC):
                     setattr(self, k, v)
     """
 
-    def __init__(self, _id: Optional[PrimaryKey] = None) -> None:
+    def __init__(self) -> None:
         self._logger = logging.getLogger(__name__)
-        if _id is None:
-            _id = str(uuid.uuid4())
-        self.id = _id
         self.cache_base_path = os.environ.get(BP_ENV_VAR)
         self._cpath = f'{self.cache_base_path}/{self.__class__.__name__}.json'
 
@@ -93,34 +88,11 @@ class StateModel(ABC):
         """
         return super().__hash__()
 
-    def __eq__(self, o: object) -> bool:
-        # TODO: chance of collision if auto id is used (uuid4)
-        if hasattr(o, 'id') and hasattr(self, 'id'):
-            return o.id == self.id  # type: ignore
-        return False
-
     def __repr__(self) -> str:
         return pformat(self.serialize())
 
-    @property
-    def id(self) -> PrimaryKey:
-        """
-        Get state model id
-
-        :return: state model id
-        :rtype: PrimaryKey
-        """
-        return self.__id
-
-    @id.setter
-    def id(self, _id: PrimaryKey) -> None:
-        """
-        Set state model id
-
-        :param _id: state model id
-        :type _id: PrimaryKey
-        """
-        self.__id = _id
+    def __eq__(self, __value: object) -> bool:
+        return super().__eq__(__value)
 
     def cache(self) -> None:
         """
@@ -167,7 +139,7 @@ class StateModel(ABC):
             self._logger.debug("Removed cached document: %s", self._cpath)
 
     @abstractmethod
-    def serialize(self) -> Dict[str, Any]:
+    def serialize(self) -> dict[str, Any]:
         """
         Serialize :class:`StateModel` properties keys and values into a python dictionary. 
         Key names should match :class:`StateModel` property names. This function must be overridden.

@@ -5,7 +5,7 @@ import logging
 import random
 
 from typing import NoReturn
-from myosin import State
+from myosin.core import State
 from example.models import Telemetry
 from example.models import System
 
@@ -14,7 +14,7 @@ class MQTTHandler:
     def __init__(self) -> None:
         self._logger = logging.getLogger(__name__)
         with State(Telemetry) as state:
-            state.subscribe(Telemetry, self.report_telemetry)
+            state.subscribe(Telemetry, self.report_telemetry, Telemetry.timestamp)
             state.subscribe(Telemetry, self.report_test)
 
     async def report_telemetry(self, telemetry: Telemetry) -> None:
@@ -44,7 +44,6 @@ class MQTTHandler:
                     system = state.checkout(System)
                     system.online = True
                     state.commit(system, cache=True)
-
 
     async def async_loop(self) -> NoReturn:
         while True:
